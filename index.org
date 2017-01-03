@@ -1,0 +1,85 @@
+#+Title: Traitor
+#+author: Daniel Alexander Smith
+#+email: nalisarc@gmail.com
+* TODO Readme
+* TODO License
+
+* TODO Characters
+** Character Object
+#+name: Character_Object
+#+BEGIN_SRC python
+  class Character(object):
+
+      def __init__(self):
+
+          self.name = name
+          self.birthday = birthday
+
+          #Stat lists
+
+          self.might = might
+          self.speed = speed
+          self.knowledge = knowledge
+          self.sanity = sanity
+
+
+
+      def __repr__(self):
+          pass
+
+
+
+#+END_SRC
+** Statistics
+Stats are represented as dictionaries containing the following bits of info:
+ * Value list
+ * Starting Slot
+ * Current Slot
+
+Each stat contains a list of 9 possible vaules. The 0 slot of each stat is always "dead".
+The remaining stats represent the number of dice that are roled for that type of roll.
+The speed stat is also used to tell how many spaces a character can move per turn.
+If a character hits 0 oead, they are dead. However if the character would take fatal damage before the haunt has started
+the Character will stay at the lowest value possible that does not kill them.
+If a character would go above the highest value, they will simply stay at that value.
+
+** Damage and Raising
+Sometimes in the game your characters will take damage.
+Characters have four stats, these are broken up into two different catagories:
+1. Mental
+   * Knowledge
+   * Sanity
+2. Physical
+   * Might
+   * Speed
+
+If a character takes damage to a category they have the ability to chose which stat takes the damage, 
+and in cases of multiple points they can divide the points up however they chose so long all the points of damage are taken.
+However if damage is dealt directly to a stat the character must take damage to that stat  unless it is mitigated somehow.
+
+When a stat is damaged the current slot for that stat is reduced by points of damage taken.
+\( CurrentSlot = OldCurrentSlot - Damage \)
+If this would push the slot into the negatives, or to 0 the character is dead. 
+However if the haunt has not started yet characters cannot take lethal damage.
+In this case, the stat is set to the lowest non dead value.
+
+
+
+** Miscellaneous Information 
+Characters have some bits of miscellaneous information in addition to their core statistics.
+This includes the name of the character, their age, birthday, hobbies, and other bits.
+While it may seem a bit odd this information is used to determine player order, and in haunts.
+
+* TODO Rooms
+** TODO Room Object
+#+name: Room_Object
+#+BEGIN_SRC python
+#+END_SRC
+** TODO Map
+* TODO Cards
+** TODO Items
+** TODO Events
+** TODO Omens
+* TODO Haunts
+* TODO Interface
+* TODO Multiplayer

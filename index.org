@@ -22,13 +22,9 @@
           self.knowledge = knowledge
           self.sanity = sanity
 
-
-
-      def __repr__(self):
+      def change_stat(self):
           pass
-
-
-
+    
 #+END_SRC
 ** Statistics
 Stats are represented as dictionaries containing the following bits of info:
@@ -59,6 +55,7 @@ However if damage is dealt directly to a stat the character must take damage to 
 
 When a stat is damaged the current slot for that stat is reduced by points of damage taken.
 \( CurrentSlot = OldCurrentSlot - Damage \)
+
 If this would push the slot into the negatives, or to 0 the character is dead. 
 However if the haunt has not started yet characters cannot take lethal damage.
 In this case, the stat is set to the lowest non dead value.
@@ -70,11 +67,23 @@ Characters have some bits of miscellaneous information in addition to their core
 This includes the name of the character, their age, birthday, hobbies, and other bits.
 While it may seem a bit odd this information is used to determine player order, and in haunts.
 
+* TODO Engine
 * TODO Rooms
 ** TODO Room Object
 #+name: Room_Object
 #+BEGIN_SRC python
+  class Room(object):
+
+      def __init__(self):
+          self.name = name
+          self.edges = edges
+        
+
+      def __repr__(self):
+          pass
+    
 #+END_SRC
+
 ** TODO Map
 * TODO Cards
 ** TODO Items

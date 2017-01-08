@@ -124,33 +124,70 @@ Up and Down moves upon the Z axis.
 Some rooms have special directions that connect to, these go to a specific cordnate.
 
 #+name: Map
-#+BEGIN_SRC python :noweb yes
+#+BEGIN_SRC python :noweb yes :tangle tratior/housemap.py 
   <<Room_Object>>
-  MAP = [
-  entrance0 = Room(
-      "Entrace Hall"
-      (0,0,0)
-      )
-  entrance1 = Room(
-      "Foyer"
-      (0,1,0)
-      )
-  entrance2 = Room(
-      "Grand Staircase"
-      (0,2,0)
-      )
-  ]
+
+  def setup():
+      MAP = {}
+
+      MAP['000']= Room(
+          "Entrance Hall",
+          '000',
+          ("north","east","west"))
+
+      MAP['001'] = Room(
+          "Foyer",
+          '001',
+          ("north","south","east","west"))
+
+
+      MAP['002'] =  Room(
+          "Grand Staircase",
+          '002',
+          ("south","east","west"))
+
+      MAP['100'] = Room(
+          "Upper Landing"
+          '100',
+          ("north","south","east","west"))
+
+      MAP['-100'] = Room(
+          "Basement Landing",
+          '-100',
+          ("north","south","east","west"))
+
+
+      MAP['000'].connect("north", MAP['001'])
+      MAP['001'].connect("north", MAP['002'])
+      MAP['002'].connect("up", MAP['100'])
+
+      return MAP
+
+
+
 #+END_SRC
+
+#+RESULTS: Map
 
 ** TODO Room Object
 #+name: Room_Object
 #+BEGIN_SRC python
   class Room(object):
 
-      def __init__(self):
+      def __init__(self,
+                   name,
+                   coordnate,
+                   allowed_edges):
+
           self.name = name
-          #self.edges = edges
-          self.x,self.y,self.z = coornates
+          self.coordnate = coordnate
+          self.edges = {}
+          for edge in allowed_edges:
+              self.edges[edge] = None
+          return None
+
+      <<Connect_Rooms>>
+    
 
 
 
@@ -159,15 +196,76 @@ Some rooms have special directions that connect to, these go to a specific cordn
 Room objects have a name, a dictonary telling which direction connects to which other room.
 Some rooms have something happen in them either you find a item, an omen, or an event. 
 This is stored in the card value.
+** Connecting Rooms
+The connect function binds two rooms together at the opposet edge.
+
+#+name: edge_table
+| Input | Opposite |
+|-------+----------|
+| north | south    |
+| south | north    |
+| east  | west     |
+| west  | east     |
+| in    | out      |
+| out   | in       |
+| up    | down     |
+| down  | up       |
+
+#+name: Connect_Rooms
+#+BEGIN_SRC python :var edges=edge_table
+  def connect(self, direction, room):
+      opposite_direction = None
+      for d in edge_table:
+          if d[0] == direction:
+              opposite_direction = d[1]
+              break
+          else:
+              continue
+      if opposite_direction == None:
+          return "Error: Missing Opposite Edge!"
+      self.edges[direction] = room
+      room.edges[opposite_direction] = self
+      return None
+
+    
+#+END_SRC
+
+** Check Connection
+#+BEGIN_SRC python
+  def is_connected_at(self, direction):
+      if self.edges[direction] != None:
+          return True
+      else:
+          return False
+#+END_SRC
+
+** Tests
+#+name: Map_Tests
+#+BEGIN_SRC python :tangle tests/map_tests.py 
+  import unittests
+  import sys
+  from trator import housemap
+
+  class MapUnitTests(unittest.TestCase):
+
+      def setUp(self):
+          self.MAP = housemap.__init__()
+
+      def test_check_connections(self):
+          self.assertEqual(self.MAP['000'].edges['north'],MAP['001'])
+
+
+
+
+  if __name__ == '__main__':
+      unittest.main()
+      sys.exit()
+    
+
+#+END_SRC
 
 * TODO Cards
 ** TODO Items
 ** TODO Events
 ** TODO Omens
 * TODO Haunts
-
-* CLI interface
-
-#+BEGIN_SRC python :tangle main.py :noweb yes 
-
-#+END_SRC

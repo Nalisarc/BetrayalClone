@@ -1,14 +1,28 @@
-import unittests
+import unittest
 import sys
-from trator import housemap
+from traitor import housemap
 
 class MapUnitTests(unittest.TestCase):
 
     def setUp(self):
-        self.MAP = housemap.__init__()
+        self.MAP = housemap.setup()
 
-    def test_check_connections(self):
-        self.assertEqual(self.MAP['000'].edges['north'],MAP['001'])
+
+    def test_if_rooms_exist(self):
+        list_of_rooms = [[r.key(),r.value()] for r in self.MAP]
+        self.assertNotEqual(len(list_of_rooms),0)
+
+    def test_if_rooms_connected(self):
+
+        self.assertTrue(
+        self.MAP['000'].is_connected_at('north')
+            )
+        self.assertTrue(
+        self.MAP['001'].is_connected_at('north')
+            )
+        self.assertTrue(
+        self.MAP['002'].is_connected_at('up')
+            )
 
 
 

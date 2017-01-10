@@ -23,10 +23,3 @@ class MapUnitTests(unittest.TestCase):
         self.assertTrue(
         self.MAP['002'].is_connected_at('up')
             )
-
-
-
-
-if __name__ == '__main__':
-    unittest.main()
-    sys.exit()

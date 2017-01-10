@@ -1,2 +1,5 @@
 /index.org~
 *.**~
+.pyc
+/t__pycache__/
+*.pyc

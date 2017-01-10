@@ -1,3 +1,4 @@
+
 #+Title: Traitor
 #+author: Daniel Alexander Smith
 #+email: nalisarc@gmail.com
@@ -124,7 +125,7 @@ Up and Down moves upon the Z axis.
 Some rooms have special directions that connect to, these go to a specific cordnate.
 
 #+name: Map
-#+BEGIN_SRC python :noweb yes :tangle tratior/housemap.py 
+#+BEGIN_SRC python :noweb yes  :tangle traitor/housemap.py 
   <<Room_Object>>
 
   def setup():
@@ -277,7 +278,7 @@ The connect function binds two rooms together at the opposet edge.
 
       def setUp(self):
           self.MAP = housemap.setup()
-        
+
 
       def test_if_rooms_exist(self):
           list_of_rooms = [[r.key(),r.value()] for r in self.MAP]
@@ -294,13 +295,6 @@ The connect function binds two rooms together at the opposet edge.
           self.assertTrue(
           self.MAP['002'].is_connected_at('up')
               )
-        
-        
-
-
-  if __name__ == '__main__':
-      unittest.main()
-      sys.exit()
 
 
 #+END_SRC
@@ -310,3 +304,14 @@ The connect function binds two rooms together at the opposet edge.
 ** TODO Events
 ** TODO Omens
 * TODO Haunts
+
+#+name: run_tests
+#+BEGIN_SRC python :tangle runtest.py :shebang #!/usr/bin/env python3
+  import sys
+  import unittest
+  from tests import map_tests
+
+  if __name__ == '__main__':
+      unittest.main()
+      sys.exit()
+#+END_SRC

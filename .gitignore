@@ -3,3 +3,4 @@
 .pyc
 /t__pycache__/
 *.pyc
+/table.py

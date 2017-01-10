@@ -1,4 +1,3 @@
-
 #+Title: Traitor
 #+author: Daniel Alexander Smith
 #+email: nalisarc@gmail.com
@@ -157,7 +156,6 @@ Some rooms have special directions that connect to, these go to a specific cordn
           '-100',
           ("north","south","east","west"))
 
-
       MAP['000'].connect("north", MAP['001'])
       MAP['001'].connect("north", MAP['002'])
       MAP['002'].connect("up", MAP['100'])
@@ -170,34 +168,34 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
 #+RESULTS: Map
 
-** TODO Room Object
-#+name: Room_Object
-#+BEGIN_SRC python
-  class Room(object):
+** Room Object
+ #+name: Room_Object
+ #+BEGIN_SRC python
+   class Room(object):
 
-      def __init__(self,
-                   name,
-                   coordnate,
-                   allowed_edges):
+       def __init__(self,
+                    name,
+                    coordnate,
+                    allowed_edges):
 
-          self.name = name
-          self.coordnate = coordnate
-          self.edges = {}
-          for edge in allowed_edges:
-              self.edges[edge] = None
-          return None
+           self.name = name
+           self.coordnate = coordnate
+           self.edges = {}
+           for edge in allowed_edges:
+               self.edges[edge] = None
+           return None
 
-      <<Connect_Rooms>>
-      <<Connection_Test_Methods>>
-
-
-
+       <<Connect_Rooms>>
+       <<Connection_Test_Methods>>
+       <<Move_Room>>
 
 
-#+END_SRC
-Room objects have a name, a dictonary telling which direction connects to which other room.
-Some rooms have something happen in them either you find a item, an omen, or an event. 
-This is stored in the card value.
+
+
+ #+END_SRC
+ Room objects have a name, a dictonary telling which direction connects to which other room.
+ Some rooms have something happen in them either you find a item, an omen, or an event. 
+ This is stored in the card value.
 ** Connecting Rooms
 The connect function binds two rooms together at the opposet edge.
 
@@ -213,9 +211,12 @@ The connect function binds two rooms together at the opposet edge.
 | up    | down     |
 | down  | up       |
 
+
+
 #+name: Connect_Rooms
-#+BEGIN_SRC python :var edges=edge_table() 
+#+BEGIN_SRC python 
   def connect(self, direction, room):
+      #Bidirectional right now
       edge_table = [
           ["north","south"],
           ["south","north"],
@@ -235,6 +236,7 @@ The connect function binds two rooms together at the opposet edge.
               continue
       if opposite_direction == None:
           return "Error: Missing Opposite Edge!"
+
       self.edges[direction] = room
       room.edges[opposite_direction] = self
       return None
@@ -267,6 +269,25 @@ The connect function binds two rooms together at the opposet edge.
     
 #+END_SRC
 
+** Moving Between Rooms
+Room objects have a move method, this takes a direction from their edges table and returns the room object connected.
+The idea is so that each character, monster, ect has a "position" that is the room.
+#+name: Move_Room
+#+BEGIN_SRC python 
+  def move(self, direction):
+      try:
+          return self.edges[direction]
+      except KeyError:
+          return self
+      except:
+          return "Unexpected Error!"
+
+#+END_SRC
+
+** Discovering Rooms
+Should a player move into a room that hasn't been discovered yet, that player uncovers a new room.
+This selection is done at random from the room list, certain rooms can only be placed on certain floors.
+If the newly discoved room has an event in it, the player must stop moving and activate the event!
 ** Tests
 #+name: Map_Tests
 #+BEGIN_SRC python :tangle tests/map_tests.py 
@@ -281,10 +302,11 @@ The connect function binds two rooms together at the opposet edge.
 
 
       def test_if_rooms_exist(self):
-          list_of_rooms = [[r.key(),r.value()] for r in self.MAP]
+          list_of_rooms = [[r, self.MAP[r]] for r in self.MAP]
           self.assertNotEqual(len(list_of_rooms),0)
 
       def test_if_rooms_connected(self):
+          #Check if connections can be made
 
           self.assertTrue(
           self.MAP['000'].is_connected_at('north')
@@ -296,6 +318,39 @@ The connect function binds two rooms together at the opposet edge.
           self.MAP['002'].is_connected_at('up')
               )
 
+          #Check reverse connections.
+          self.assertTrue(
+          self.MAP['001'].is_connected_at('south')
+              )
+          self.assertTrue(
+          self.MAP['002'].is_connected_at('south')
+              )
+          self.assertTrue(
+          self.MAP['100'].is_connected_at('down')
+              )
+
+      def test_can_move_between_rooms(self):
+          pos = self.MAP['000']
+
+          pos = pos.move('north')
+
+          self.assertEqual(pos,self.MAP['001'],
+                           "Position did not move!")
+          pos = pos.move('south')
+
+          self.assertEqual(pos,self.MAP['000'],
+                           "Position failed in reverse")
+
+      def test_cannot_move_invalid_direction(self):
+
+          pos = self.MAP['000']
+          pos = pos.move('up')
+          self.assertEqual(pos,self.MAP['000'])
+
+    
+
+
+
 
 #+END_SRC
 
@@ -305,13 +360,3 @@ The connect function binds two rooms together at the opposet edge.
 ** TODO Omens
 * TODO Haunts
 
-#+name: run_tests
-#+BEGIN_SRC python :tangle runtest.py :shebang #!/usr/bin/env python3
-  import sys
-  import unittest
-  from tests import map_tests
-
-  if __name__ == '__main__':
-      unittest.main()
-      sys.exit()
-#+END_SRC

@@ -13,6 +13,7 @@ class Room(object):
         return None
 
     def connect(self, direction, room):
+        #Bidirectional right now
         edge_table = [
             ["north","south"],
             ["south","north"],
@@ -32,6 +33,7 @@ class Room(object):
                 continue
         if opposite_direction == None:
             return "Error: Missing Opposite Edge!"
+    
         self.edges[direction] = room
         room.edges[opposite_direction] = self
         return None
@@ -57,7 +59,14 @@ class Room(object):
         else:
             return False
     
-
+    def move(self, direction):
+        try:
+            return self.edges[direction]
+        except KeyError:
+            return self
+        except:
+            return "Unexpected Error!"
+    
 
 
 
@@ -91,7 +100,6 @@ def setup():
         "Basement Landing",
         '-100',
         ("north","south","east","west"))
-
 
     MAP['000'].connect("north", MAP['001'])
     MAP['001'].connect("north", MAP['002'])

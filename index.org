@@ -130,41 +130,42 @@ Some rooms have special directions that connect to, these go to a specific cordn
 #+BEGIN_SRC python :noweb yes  :tangle traitor/housemap.py 
   <<Room_Object>>
 
-  def setup():
-      MAP = {}
+  class Map(object):
+      def __init__(self):
+          MAP = {}
 
-      MAP[(0,0,0)]= Room(
-          "Entrance Hall",
-          (0,0,0),
-          ("north","east","west"))
+          MAP[(0,0,0)]= Room(
+              "Entrance Hall",
+              ("north","east","west"))
 
-      MAP[(0,0,1)] = Room(
-          "Foyer",
-          '001',
-          ("north","south","east","west"))
+          MAP[(0,0,1)] = Room(
+              "Foyer",
+              ("north","south","east","west"))
 
 
-      MAP[(0,0,2)] =  Room(
-          "Grand Staircase",
-          '002',
-          ("south","east","west"))
+          MAP[(0,0,2)] =  Room(
+              "Grand Staircase",
+              ("south","east","west"))
 
-      MAP[(1,0,0)] = Room(
-          "Upper Landing",
-          (1,0,0),
-          ("north","south","east","west"))
+          MAP[(1,0,0)] = Room(
+              "Upper Landing",
+              ("north","south","east","west"))
 
-      MAP[(-1,0,0)] = Room(
-          "Basement Landing",
-          (-1,0,0),
-          ("north","south","east","west"))
+          MAP[(-1,0,0)] = Room(
+              "Basement Landing",
+              ("north","south","east","west"))
 
-      MAP[(0,0,0)].connect("north", MAP[(0,0,1)])
-      MAP[(0,0,1)].connect("north", MAP[(0,0,2)])
-      MAP[(0,0,2)].connect("up", MAP[(1,0,0)])
+          MAP[(0,0,0)].bi_connect("north", MAP[(0,0,1)])
+          MAP[(0,0,1)].bi_connect("north", MAP[(0,0,2)])
+          MAP[(0,0,2)].bi_connect("up", MAP[(1,0,0)])
 
-      return MAP
+          self.MAP = MAP
 
+
+
+          def discover(self,coordnate, room):
+
+              self.MAP[coordnate] = room
 
 
 #+END_SRC
@@ -178,11 +179,9 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
        def __init__(self,
                     name,
-                    coordnate,
                     allowed_edges):
 
            self.name = name
-           self.coordnate = coordnate
            self.edges = {}
            for edge in allowed_edges:
                self.edges[edge] = None
@@ -191,8 +190,6 @@ Some rooms have special directions that connect to, these go to a specific cordn
        <<Connect_Rooms>>
        <<Connection_Test_Methods>>
        <<Move_Room>>
-
-
 
 
  #+END_SRC
@@ -219,7 +216,11 @@ The connect function binds two rooms together at the opposet edge.
 #+name: Connect_Rooms
 #+BEGIN_SRC python 
   def connect(self, direction, room):
-      #Bidirectional right now
+      self.edges[direction] = room
+      return None
+
+  def bi_connect(self, direction, room):
+
       edge_table = [
           ["north","south"],
           ["south","north"],
@@ -240,9 +241,12 @@ The connect function binds two rooms together at the opposet edge.
       if opposite_direction == None:
           return "Error: Missing Opposite Edge!"
 
-      self.edges[direction] = room
-      room.edges[opposite_direction] = self
-      return None
+      self.connect(direction, room)
+      room.connect(opposite_direction, self)
+    
+
+
+
 
 
 #+END_SRC
@@ -304,7 +308,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
   class MapUnitTests(unittest.TestCase):
 
       def setUp(self):
-          self.MAP = housemap.setup()
+          self.MAP = housemap.Map().MAP
 
 
       def test_if_rooms_exist(self):
@@ -369,21 +373,5 @@ If the newly discoved room has an event in it, the player must stop moving and a
 * Engine
 
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes 
-  import housemap
-
-
-  <<Character_Object>>
-
-  MAP = housemap.setup()
-
-  me = Character(
-      "Zeeter",
-      "Jan 17",
-
-      might=["dead",9,9,9,9,9,9,9,9]
-      speed=["dead",9,9,9,9,9,9,9,9]
-      knowledge=["dead",9,9,9,9,9,9,9,9]
-      sanity=["dead",9,9,9,9,9,9,9,9]
-  )
 #+END_SRC
 

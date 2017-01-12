@@ -5,7 +5,7 @@ from traitor import housemap
 class MapUnitTests(unittest.TestCase):
 
     def setUp(self):
-        self.MAP = housemap.setup()
+        self.MAP = housemap.Map().MAP
 
 
     def test_if_rooms_exist(self):

@@ -2,18 +2,20 @@ class Room(object):
 
     def __init__(self,
                  name,
-                 coordnate,
                  allowed_edges):
 
         self.name = name
-        self.coordnate = coordnate
         self.edges = {}
         for edge in allowed_edges:
             self.edges[edge] = None
         return None
 
     def connect(self, direction, room):
-        #Bidirectional right now
+        self.edges[direction] = room
+        return None
+    
+    def bi_connect(self, direction, room):
+    
         edge_table = [
             ["north","south"],
             ["south","north"],
@@ -34,9 +36,12 @@ class Room(object):
         if opposite_direction == None:
             return "Error: Missing Opposite Edge!"
     
-        self.edges[direction] = room
-        room.edges[opposite_direction] = self
-        return None
+        self.connect(direction, room)
+        room.connect(opposite_direction, self)
+    
+    
+    
+    
     
     
     def is_connected_at(self, direction):
@@ -72,40 +77,39 @@ class Room(object):
     
 
 
+class Map(object):
+    def __init__(self):
+        MAP = {}
+
+        MAP[(0,0,0)]= Room(
+            "Entrance Hall",
+            ("north","east","west"))
+
+        MAP[(0,0,1)] = Room(
+            "Foyer",
+            ("north","south","east","west"))
+
+
+        MAP[(0,0,2)] =  Room(
+            "Grand Staircase",
+            ("south","east","west"))
+
+        MAP[(1,0,0)] = Room(
+            "Upper Landing",
+            ("north","south","east","west"))
+
+        MAP[(-1,0,0)] = Room(
+            "Basement Landing",
+            ("north","south","east","west"))
+
+        MAP[(0,0,0)].bi_connect("north", MAP[(0,0,1)])
+        MAP[(0,0,1)].bi_connect("north", MAP[(0,0,2)])
+        MAP[(0,0,2)].bi_connect("up", MAP[(1,0,0)])
+
+        self.MAP = MAP
 
 
 
-def setup():
-    MAP = {}
+        def discover(self,coordnate, room):
 
-    MAP[(0,0,0)]= Room(
-        "Entrance Hall",
-        (0,0,0),
-        ("north","east","west"))
-
-    MAP[(0,0,1)] = Room(
-        "Foyer",
-        '001',
-        ("north","south","east","west"))
-
-
-    MAP[(0,0,2)] =  Room(
-        "Grand Staircase",
-        '002',
-        ("south","east","west"))
-
-    MAP[(1,0,0)] = Room(
-        "Upper Landing",
-        (1,0,0),
-        ("north","south","east","west"))
-
-    MAP[(-1,0,0)] = Room(
-        "Basement Landing",
-        (-1,0,0),
-        ("north","south","east","west"))
-
-    MAP[(0,0,0)].connect("north", MAP[(0,0,1)])
-    MAP[(0,0,1)].connect("north", MAP[(0,0,2)])
-    MAP[(0,0,2)].connect("up", MAP[(1,0,0)])
-
-    return MAP
+            self.MAP[coordnate] = room

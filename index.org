@@ -24,8 +24,11 @@
           #Inventory
           self.inventory = []
 
+          #Position
+          self.position = (0,0,0)
+
       <<Character_Change_Stat>>
-    
+
 #+END_SRC
 ** Statistics
 Stats are represented as dictionaries containing the following bits of info:
@@ -105,7 +108,7 @@ The staircase to the basement is hidden so you'll have to find it, once you do i
 
 ** TODO Map
 The map contains where the rooms are. 
-The entrance hall is always located at (0,0,0) and goes til (0,3,0).
+The entrance hall is always located at (0,0,0) and goes til (0,2,0).
 
 Players can move any of the following directions:
 Cardinal Directions:
@@ -130,35 +133,35 @@ Some rooms have special directions that connect to, these go to a specific cordn
   def setup():
       MAP = {}
 
-      MAP['000']= Room(
+      MAP[(0,0,0)]= Room(
           "Entrance Hall",
-          '000',
+          (0,0,0),
           ("north","east","west"))
 
-      MAP['001'] = Room(
+      MAP[(0,0,1)] = Room(
           "Foyer",
           '001',
           ("north","south","east","west"))
 
 
-      MAP['002'] =  Room(
+      MAP[(0,0,2)] =  Room(
           "Grand Staircase",
           '002',
           ("south","east","west"))
 
-      MAP['100'] = Room(
+      MAP[(1,0,0)] = Room(
           "Upper Landing",
-          '100',
+          (1,0,0),
           ("north","south","east","west"))
 
-      MAP['-100'] = Room(
+      MAP[(-1,0,0)] = Room(
           "Basement Landing",
-          '-100',
+          (-1,0,0),
           ("north","south","east","west"))
 
-      MAP['000'].connect("north", MAP['001'])
-      MAP['001'].connect("north", MAP['002'])
-      MAP['002'].connect("up", MAP['100'])
+      MAP[(0,0,0)].connect("north", MAP[(0,0,1)])
+      MAP[(0,0,1)].connect("north", MAP[(0,0,2)])
+      MAP[(0,0,2)].connect("up", MAP[(1,0,0)])
 
       return MAP
 
@@ -276,7 +279,10 @@ The idea is so that each character, monster, ect has a "position" that is the ro
 #+BEGIN_SRC python 
   def move(self, direction):
       try:
-          return self.edges[direction]
+          if direction != None:
+              return self.edges[direction]
+          else:
+              pass
       except KeyError:
           return self
       except:
@@ -309,45 +315,46 @@ If the newly discoved room has an event in it, the player must stop moving and a
           #Check if connections can be made
 
           self.assertTrue(
-          self.MAP['000'].is_connected_at('north')
+          self.MAP[(0,0,0)].is_connected_at('north')
               )
           self.assertTrue(
-          self.MAP['001'].is_connected_at('north')
+          self.MAP[(0,0,1)].is_connected_at('north')
               )
           self.assertTrue(
-          self.MAP['002'].is_connected_at('up')
+          self.MAP[(0,0,2)].is_connected_at('up')
               )
 
           #Check reverse connections.
           self.assertTrue(
-          self.MAP['001'].is_connected_at('south')
+          self.MAP[(0,0,1)].is_connected_at('south')
               )
           self.assertTrue(
-          self.MAP['002'].is_connected_at('south')
+          self.MAP[(0,0,2)].is_connected_at('south')
               )
           self.assertTrue(
-          self.MAP['100'].is_connected_at('down')
+          self.MAP[(1,0,0)].is_connected_at('down')
               )
 
       def test_can_move_between_rooms(self):
-          pos = self.MAP['000']
+          pos = self.MAP[(0,0,0)]
 
           pos = pos.move('north')
 
-          self.assertEqual(pos,self.MAP['001'],
+          self.assertEqual(pos,self.MAP[(0,0,1)],
                            "Position did not move!")
           pos = pos.move('south')
 
-          self.assertEqual(pos,self.MAP['000'],
+          self.assertEqual(pos,self.MAP[(0,0,0)],
                            "Position failed in reverse")
 
       def test_cannot_move_invalid_direction(self):
 
-          pos = self.MAP['000']
+          pos = self.MAP[(0,0,0)]
           pos = pos.move('up')
-          self.assertEqual(pos,self.MAP['000'])
+          self.assertEqual(pos,self.MAP[(0,0,0)])
 
-    
+
+
 
 
 
@@ -359,4 +366,24 @@ If the newly discoved room has an event in it, the player must stop moving and a
 ** TODO Events
 ** TODO Omens
 * TODO Haunts
+* Engine
+
+#+BEGIN_SRC python :tangle traitor/main.py :noweb yes 
+  import housemap
+
+
+  <<Character_Object>>
+
+  MAP = housemap.setup()
+
+  me = Character(
+      "Zeeter",
+      "Jan 17",
+
+      might=["dead",9,9,9,9,9,9,9,9]
+      speed=["dead",9,9,9,9,9,9,9,9]
+      knowledge=["dead",9,9,9,9,9,9,9,9]
+      sanity=["dead",9,9,9,9,9,9,9,9]
+  )
+#+END_SRC
 

@@ -61,7 +61,10 @@ class Room(object):
     
     def move(self, direction):
         try:
-            return self.edges[direction]
+            if direction != None:
+                return self.edges[direction]
+            else:
+                pass
         except KeyError:
             return self
         except:
@@ -75,34 +78,34 @@ class Room(object):
 def setup():
     MAP = {}
 
-    MAP['000']= Room(
+    MAP[(0,0,0)]= Room(
         "Entrance Hall",
-        '000',
+        (0,0,0),
         ("north","east","west"))
 
-    MAP['001'] = Room(
+    MAP[(0,0,1)] = Room(
         "Foyer",
         '001',
         ("north","south","east","west"))
 
 
-    MAP['002'] =  Room(
+    MAP[(0,0,2)] =  Room(
         "Grand Staircase",
         '002',
         ("south","east","west"))
 
-    MAP['100'] = Room(
+    MAP[(1,0,0)] = Room(
         "Upper Landing",
-        '100',
+        (1,0,0),
         ("north","south","east","west"))
 
-    MAP['-100'] = Room(
+    MAP[(-1,0,0)] = Room(
         "Basement Landing",
-        '-100',
+        (-1,0,0),
         ("north","south","east","west"))
 
-    MAP['000'].connect("north", MAP['001'])
-    MAP['001'].connect("north", MAP['002'])
-    MAP['002'].connect("up", MAP['100'])
+    MAP[(0,0,0)].connect("north", MAP[(0,0,1)])
+    MAP[(0,0,1)].connect("north", MAP[(0,0,2)])
+    MAP[(0,0,2)].connect("up", MAP[(1,0,0)])
 
     return MAP

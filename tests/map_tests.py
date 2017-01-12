@@ -16,40 +16,40 @@ class MapUnitTests(unittest.TestCase):
         #Check if connections can be made
 
         self.assertTrue(
-        self.MAP['000'].is_connected_at('north')
+        self.MAP[(0,0,0)].is_connected_at('north')
             )
         self.assertTrue(
-        self.MAP['001'].is_connected_at('north')
+        self.MAP[(0,0,1)].is_connected_at('north')
             )
         self.assertTrue(
-        self.MAP['002'].is_connected_at('up')
+        self.MAP[(0,0,2)].is_connected_at('up')
             )
 
         #Check reverse connections.
         self.assertTrue(
-        self.MAP['001'].is_connected_at('south')
+        self.MAP[(0,0,1)].is_connected_at('south')
             )
         self.assertTrue(
-        self.MAP['002'].is_connected_at('south')
+        self.MAP[(0,0,2)].is_connected_at('south')
             )
         self.assertTrue(
-        self.MAP['100'].is_connected_at('down')
+        self.MAP[(1,0,0)].is_connected_at('down')
             )
 
     def test_can_move_between_rooms(self):
-        pos = self.MAP['000']
+        pos = self.MAP[(0,0,0)]
 
         pos = pos.move('north')
 
-        self.assertEqual(pos,self.MAP['001'],
+        self.assertEqual(pos,self.MAP[(0,0,1)],
                          "Position did not move!")
         pos = pos.move('south')
 
-        self.assertEqual(pos,self.MAP['000'],
+        self.assertEqual(pos,self.MAP[(0,0,0)],
                          "Position failed in reverse")
 
     def test_cannot_move_invalid_direction(self):
 
-        pos = self.MAP['000']
+        pos = self.MAP[(0,0,0)]
         pos = pos.move('up')
-        self.assertEqual(pos,self.MAP['000'])
+        self.assertEqual(pos,self.MAP[(0,0,0)])

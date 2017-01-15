@@ -138,34 +138,39 @@ Some rooms have special directions that connect to, these go to a specific cordn
               "Entrance Hall",
               ("north","east","west"))
 
-          MAP[(0,0,1)] = Room(
+          MAP[(0,1,0)] = Room(
               "Foyer",
               ("north","south","east","west"))
 
 
-          MAP[(0,0,2)] =  Room(
+          MAP[(0,2,0)] =  Room(
               "Grand Staircase",
               ("south","east","west"))
 
-          MAP[(1,0,0)] = Room(
+          MAP[(0,0,1)] = Room(
               "Upper Landing",
               ("north","south","east","west"))
 
-          MAP[(-1,0,0)] = Room(
+          MAP[(0,0,-1)] = Room(
               "Basement Landing",
               ("north","south","east","west"))
 
-          MAP[(0,0,0)].bi_connect("north", MAP[(0,0,1)])
-          MAP[(0,0,1)].bi_connect("north", MAP[(0,0,2)])
-          MAP[(0,0,2)].bi_connect("up", MAP[(1,0,0)])
+          for room in MAP:
+              MAP[room].set_coordnate(room)
+
+
+          MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
+          MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
+          MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
+
+
+
 
           self.MAP = MAP
 
+      <<map_discover>>
 
 
-          def discover(self,coordnate, room):
-
-              self.MAP[coordnate] = room
 
 
 #+END_SRC
@@ -186,6 +191,13 @@ Some rooms have special directions that connect to, these go to a specific cordn
            for edge in allowed_edges:
                self.edges[edge] = None
            return None
+
+       def set_coordnate(self,coordnate):
+           self.x,self.y,self.z = coordnate
+           return None
+    
+       def get_coordnate(self):
+           return (self.x,self.y,self.z)
 
        <<Connect_Rooms>>
        <<Connection_Test_Methods>>
@@ -215,8 +227,9 @@ The connect function binds two rooms together at the opposet edge.
 
 #+name: Connect_Rooms
 #+BEGIN_SRC python 
+
   def connect(self, direction, room):
-      self.edges[direction] = room
+      self.edges[direction] = room.get_coordnate()
       return None
 
   def bi_connect(self, direction, room):
@@ -243,8 +256,6 @@ The connect function binds two rooms together at the opposet edge.
 
       self.connect(direction, room)
       room.connect(opposite_direction, self)
-    
-
 
 
 
@@ -282,13 +293,12 @@ The idea is so that each character, monster, ect has a "position" that is the ro
 #+name: Move_Room
 #+BEGIN_SRC python 
   def move(self, direction):
+    
+
       try:
-          if direction != None:
-              return self.edges[direction]
-          else:
-              pass
+          return self.edges[direction]
       except KeyError:
-          return self
+          return self.get_coordnate()
       except:
           return "Unexpected Error!"
 
@@ -298,6 +308,17 @@ The idea is so that each character, monster, ect has a "position" that is the ro
 Should a player move into a room that hasn't been discovered yet, that player uncovers a new room.
 This selection is done at random from the room list, certain rooms can only be placed on certain floors.
 If the newly discoved room has an event in it, the player must stop moving and activate the event!
+
+#+name: map_discover
+#+BEGIN_SRC python
+
+  def discover(self,coordnate, room):
+
+      self.MAP[coordnate] = room
+    
+
+#+END_SRC
+
 ** Tests
 #+name: Map_Tests
 #+BEGIN_SRC python :tangle tests/map_tests.py 
@@ -308,8 +329,9 @@ If the newly discoved room has an event in it, the player must stop moving and a
   class MapUnitTests(unittest.TestCase):
 
       def setUp(self):
-          self.MAP = housemap.Map().MAP
 
+          self.house = housemap.Map()
+          self.MAP = self.house.MAP
 
       def test_if_rooms_exist(self):
           list_of_rooms = [[r, self.MAP[r]] for r in self.MAP]
@@ -322,31 +344,31 @@ If the newly discoved room has an event in it, the player must stop moving and a
           self.MAP[(0,0,0)].is_connected_at('north')
               )
           self.assertTrue(
-          self.MAP[(0,0,1)].is_connected_at('north')
+          self.MAP[(0,1,0)].is_connected_at('north')
               )
           self.assertTrue(
-          self.MAP[(0,0,2)].is_connected_at('up')
+          self.MAP[(0,2,0)].is_connected_at('up')
               )
 
           #Check reverse connections.
           self.assertTrue(
-          self.MAP[(0,0,1)].is_connected_at('south')
+          self.MAP[(0,1,0)].is_connected_at('south')
               )
           self.assertTrue(
-          self.MAP[(0,0,2)].is_connected_at('south')
+          self.MAP[(0,2,0)].is_connected_at('south')
               )
           self.assertTrue(
-          self.MAP[(1,0,0)].is_connected_at('down')
+          self.MAP[(0,0,1)].is_connected_at('down')
               )
 
       def test_can_move_between_rooms(self):
           pos = self.MAP[(0,0,0)]
 
-          pos = pos.move('north')
+          pos = self.MAP[pos.move('north')]
 
-          self.assertEqual(pos,self.MAP[(0,0,1)],
+          self.assertEqual(pos,self.MAP[(0,1,0)],
                            "Position did not move!")
-          pos = pos.move('south')
+          pos = self.MAP[pos.move('south')]
 
           self.assertEqual(pos,self.MAP[(0,0,0)],
                            "Position failed in reverse")
@@ -354,7 +376,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
       def test_cannot_move_invalid_direction(self):
 
           pos = self.MAP[(0,0,0)]
-          pos = pos.move('up')
+          pos = self.MAP[pos.move('up')]
           self.assertEqual(pos,self.MAP[(0,0,0)])
 
 

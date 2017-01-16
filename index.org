@@ -293,14 +293,17 @@ The idea is so that each character, monster, ect has a "position" that is the ro
 #+name: Move_Room
 #+BEGIN_SRC python 
   def move(self, direction):
-    
 
-      try:
-          return self.edges[direction]
-      except KeyError:
-          return self.get_coordnate()
-      except:
-          return "Unexpected Error!"
+      #If none, raises an assertion error signalling that discover is needed
+      
+      assert self.edges[direction] != None
+      return self.edges[direction]
+
+
+#+END_SRC
+
+#+name: MoveErrors
+#+BEGIN_SRC python
 
 #+END_SRC
 
@@ -376,8 +379,43 @@ If the newly discoved room has an event in it, the player must stop moving and a
       def test_cannot_move_invalid_direction(self):
 
           pos = self.MAP[(0,0,0)]
-          pos = self.MAP[pos.move('up')]
-          self.assertEqual(pos,self.MAP[(0,0,0)])
+          try:
+              pos = self.MAP[pos.move('up')]
+          except KeyError:
+              self.assertEqual(pos,self.MAP[(0,0,0)])
+
+
+      def test_does_not_move_if_room_is_undiscovered(self):
+
+          pos = self.MAP[(0,0,0)]
+          try:
+              pos.move("east")
+          except AssertionError:
+              self.assertEqual(pos,self.MAP[(0,0,0)])
+
+
+      def test_discover_method_works(self):
+          discovered_room = housemap.Room(
+              "Test Room",
+              ["north","east","west"]
+          )
+
+          pos = self.MAP[(0,0,0)]
+          self.house.discover(
+              (1,0,0),
+              discovered_room
+          )
+          self.MAP[(1,0,0)].set_coordnate((1,0,0))
+
+          pos.bi_connect('east',self.MAP[(1,0,0)])
+        
+          pos = self.MAP[pos.move('east')]
+
+          self.assertEqual(pos,self.MAP[(1,0,0)],
+                           "Wrong room?!? {0}".format(pos.name)
+          )
+
+
 
 
 
@@ -393,7 +431,22 @@ If the newly discoved room has an event in it, the player must stop moving and a
 ** TODO Omens
 * TODO Haunts
 * Engine
-
+We start putting things together here in the engine
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes 
+
+  from traitor import housemap
+  <<Character_Object>>
+  house = housemap.Map()
+  me = Character(
+      "Zeeter",
+      "01/17",
+      ['dead',9,9,9,9,9,9,9,9,9],
+      ['dead',9,9,9,9,9,9,9,9,9],
+      ['dead',9,9,9,9,9,9,9,9,9],
+      ['dead',9,9,9,9,9,9,9,9,9],
+  )
+
+  me.pos = house.MAP[(0,0,0)]
+
 #+END_SRC
 

@@ -72,13 +72,11 @@ class Room(object):
     
     def move(self, direction):
     
+        #If none, raises an assertion error signalling that discover is needed
     
-        try:
-            return self.edges[direction]
-        except KeyError:
-            return self.get_coordnate()
-        except:
-            return "Unexpected Error!"
+        assert self.edges[direction] != None
+        return self.edges[direction]
+    
     
 
 

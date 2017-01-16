@@ -52,5 +52,38 @@ class MapUnitTests(unittest.TestCase):
     def test_cannot_move_invalid_direction(self):
 
         pos = self.MAP[(0,0,0)]
-        pos = self.MAP[pos.move('up')]
-        self.assertEqual(pos,self.MAP[(0,0,0)])
+        try:
+            pos = self.MAP[pos.move('up')]
+        except KeyError:
+            self.assertEqual(pos,self.MAP[(0,0,0)])
+
+
+    def test_does_not_move_if_room_is_undiscovered(self):
+
+        pos = self.MAP[(0,0,0)]
+        try:
+            pos.move("east")
+        except AssertionError:
+            self.assertEqual(pos,self.MAP[(0,0,0)])
+
+
+    def test_discover_method_works(self):
+        discovered_room = housemap.Room(
+            "Test Room",
+            ["north","east","west"]
+        )
+
+        pos = self.MAP[(0,0,0)]
+        self.house.discover(
+            (1,0,0),
+            discovered_room
+        )
+        self.MAP[(1,0,0)].set_coordnate((1,0,0))
+
+        pos.bi_connect('east',self.MAP[(1,0,0)])
+
+        pos = self.MAP[pos.move('east')]
+
+        self.assertEqual(pos,self.MAP[(1,0,0)],
+                         "Wrong room?!? {0}".format(pos.name)
+        )

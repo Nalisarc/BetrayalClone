@@ -1,4 +1,6 @@
-from traitor import housemap
+#!/usr/bin/env python3
+import sys
+import housemap
 class Character(object):
 
     def __init__(self):
@@ -32,14 +34,70 @@ class Character(object):
         #Change sucessful
         return None
 
-house = housemap.Map()
-me = Character(
-    "Zeeter",
-    "01/17",
-    ['dead',9,9,9,9,9,9,9,9,9],
-    ['dead',9,9,9,9,9,9,9,9,9],
-    ['dead',9,9,9,9,9,9,9,9,9],
-    ['dead',9,9,9,9,9,9,9,9,9],
-)
 
-me.pos = house.MAP[(0,0,0)]
+house = housemap.Map()
+
+class player(object):
+
+    def __init__(self, house):
+
+        self.house = house
+        self.pos = self.house.MAP[(0,0,0)]
+        return None
+
+    def repl(self):
+        prompt = '==>'
+        while True:
+
+            i = input(prompt)
+            if i == "go":
+                direction = input("Which direction: ")
+                self.go(direction)
+            elif i == "quit":
+                self.quit()
+
+            elif i == "":
+                pass
+            else:
+                print("Im sorry Dave, I'm afraid I can't do that")
+
+
+
+    def go(self,direction):
+        try:
+            pos = self.house.MAP[self.pos.move(direction)]
+            print(pos.name)
+            return None
+        except AssertionError:
+            x,y,z = self.pos.get_coordnate()
+
+            if direction == "north":
+                y += 1
+            if direction == "south":
+                y -= 1
+            if direction == "east":
+                x += 1
+            if direction == "west":
+                x -= 1
+
+            self.house.discover((x,y,z),housemap.Room(
+                "test room",
+                ['north','south','east','west'])
+            )
+            self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
+            self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
+            self.pos = self.house.MAP[self.pos.move(direction)]
+            print(self.pos.name)
+            return None
+        except KeyError:
+            print("Invaild direction!")
+            print(self.pos.name)
+            return None
+
+    def quit(self):
+        sys.exit()
+
+
+if __name__ == '__main__':
+    me = player(house)
+    me.repl()

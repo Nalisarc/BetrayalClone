@@ -65,8 +65,8 @@ class player(object):
 
     def go(self,direction):
         try:
-            pos = self.house.MAP[self.pos.move(direction)]
-            print(pos.name)
+            self.pos = self.house.MAP[self.pos.move(direction)]
+            print(self.pos.name, self.pos.get_coordnate())
             return None
         except AssertionError:
             x,y,z = self.pos.get_coordnate()
@@ -80,18 +80,24 @@ class player(object):
             if direction == "west":
                 x -= 1
 
-            self.house.discover((x,y,z),housemap.Room(
-                "test room",
-                ['north','south','east','west'])
-            )
-            self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
-            self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
-            self.pos = self.house.MAP[self.pos.move(direction)]
-            print(self.pos.name)
-            return None
+            try:
+                self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
+                self.pos = self.house.MAP[self.pos.move(direction)]
+                print(self.pos.name, self.pos.get_coordnate())
+            except KeyError:
+
+                self.house.discover((x,y,z),housemap.Room(
+                    "test room",
+                    ['north','south','east','west'])
+                )
+                self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
+                self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
+                self.pos = self.house.MAP[self.pos.move(direction)]
+                print(self.pos.name, self.pos.get_coordnate())
+                return None
         except KeyError:
             print("Invaild direction!")
-            print(self.pos.name)
+            print(self.pos.name, self.pos.get_coordnate())
             return None
 
     def quit(self):

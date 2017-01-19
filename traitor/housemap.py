@@ -2,13 +2,17 @@ class Room(object):
 
     def __init__(self,
                  name,
-                 allowed_edges):
+                 number_of_doors):
 
         self.name = name
-        self.edges = {}
-        for edge in allowed_edges:
-            self.edges[edge] = None
-        return None
+        self.edges = []
+
+        for d in range(number_of_doors):
+            self.edges.append({
+                "direction": None,
+                "connection": None
+            })
+
 
     def set_coordnate(self,coordnate):
         self.x,self.y,self.z = coordnate
@@ -19,7 +23,24 @@ class Room(object):
 
     
     def connect(self, direction, room):
-        self.edges[direction] = room.get_coordnate()
+        special_directions = ['up','down','in','out']
+    
+        if direction in special_directions:
+            self.edges.append(
+                {"direction": direction,
+                 "connection": room.get_coordnate()
+                }
+                )
+            return None
+    
+        for edge in self.edges:
+            if edge["direction"] == None:
+                edge["direction"] = direction
+                edge["connection"] = room.get_coordnate()
+                break
+            else:
+                pass
+    
         return None
     
     def bi_connect(self, direction, room):
@@ -51,33 +72,37 @@ class Room(object):
     
     
     def is_connected_at(self, direction):
-        if self.edges[direction] != None:
-            return True
-        else:
-            return False
+        for edge in self.edges:
+            if edge["direction"] == direction:
+                return True
+    
+        return False
     
     def is_connected_to(self,room):
-        if room in self.edges.values():
-            return True
-        else:
-            return False
+        for edge in self.edges:
+            if edge["connection"] == room:
+                return True
+        return False
     
-    def is_connected_to_at(self, room, direction):
-        condition1 = self.is_connected_at(direction)
-        condition2 = self.is_connected_to(room)
-        if condition1 and condition2:
-            return True
-        else:
-            return False
+    def is_connected_to_at(self,direction,room):
+        for edge in self.edges:
+            con_1 = edge["direction"] == direction
+            con_2 = edge["connection"] == room
+            if con_1 and con_2:
+                return True
     
+        return False
     def move(self, direction):
     
-        #If none, raises an assertion error signalling that discover is needed
+        for edge in self.edges:
+            if edge["direction"] == direction:
+                assert edge["connection"] != None
+                return edge["connection"]
+        #raise KeyError
     
-        assert self.edges[direction] != None
-        return self.edges[direction]
     
     
+
 
 
 
@@ -87,24 +112,30 @@ class Map(object):
 
         MAP[(0,0,0)]= Room(
             "Entrance Hall",
-            ("north","east","west"))
+            3
+        )
 
         MAP[(0,1,0)] = Room(
             "Foyer",
-            ("north","south","east","west"))
+            4
+        )
 
 
         MAP[(0,2,0)] =  Room(
             "Grand Staircase",
-            ("south","east","west"))
+            4
+        )
 
         MAP[(0,0,1)] = Room(
             "Upper Landing",
-            ("north","south","east","west"))
+            4
+        )
 
         MAP[(0,0,-1)] = Room(
             "Basement Landing",
-            ("north","south","east","west"))
+            4
+        )
+
 
         for room in MAP:
             MAP[room].set_coordnate(room)

@@ -136,24 +136,30 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
           MAP[(0,0,0)]= Room(
               "Entrance Hall",
-              ("north","east","west"))
+              3
+          )
 
           MAP[(0,1,0)] = Room(
               "Foyer",
-              ("north","south","east","west"))
+              4
+          )
 
 
           MAP[(0,2,0)] =  Room(
               "Grand Staircase",
-              ("south","east","west"))
+              4
+          )
 
           MAP[(0,0,1)] = Room(
               "Upper Landing",
-              ("north","south","east","west"))
+              4
+          )
 
           MAP[(0,0,-1)] = Room(
               "Basement Landing",
-              ("north","south","east","west"))
+              4
+          )
+            
 
           for room in MAP:
               MAP[room].set_coordnate(room)
@@ -184,24 +190,29 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
        def __init__(self,
                     name,
-                    allowed_edges):
+                    number_of_doors):
 
            self.name = name
-           self.edges = {}
-           for edge in allowed_edges:
-               self.edges[edge] = None
-           return None
+           self.edges = []
+
+           for d in range(number_of_doors):
+               self.edges.append({
+                   "direction": None,
+                   "connection": None
+               })
+
 
        def set_coordnate(self,coordnate):
            self.x,self.y,self.z = coordnate
            return None
-    
+
        def get_coordnate(self):
            return (self.x,self.y,self.z)
 
        <<Connect_Rooms>>
        <<Connection_Test_Methods>>
        <<Move_Room>>
+
 
 
  #+END_SRC
@@ -229,7 +240,24 @@ The connect function binds two rooms together at the opposet edge.
 #+BEGIN_SRC python 
 
   def connect(self, direction, room):
-      self.edges[direction] = room.get_coordnate()
+      special_directions = ['up','down','in','out']
+
+      if direction in special_directions:
+          self.edges.append(
+              {"direction": direction,
+               "connection": room.get_coordnate()
+              }
+              )
+          return None
+    
+      for edge in self.edges:
+          if edge["direction"] == None:
+              edge["direction"] = direction
+              edge["connection"] = room.get_coordnate()
+              break
+          else:
+              pass
+
       return None
 
   def bi_connect(self, direction, room):
@@ -266,25 +294,26 @@ The connect function binds two rooms together at the opposet edge.
 #+name: Connection_Test_Methods
 #+BEGIN_SRC python
   def is_connected_at(self, direction):
-      if self.edges[direction] != None:
-          return True
-      else:
-          return False
+      for edge in self.edges:
+          if edge["direction"] == direction:
+              return True
+
+      return False
 
   def is_connected_to(self,room):
-      if room in self.edges.values():
-          return True
-      else:
-          return False
+      for edge in self.edges:
+          if edge["connection"] == room:
+              return True
+      return False
 
-  def is_connected_to_at(self, room, direction):
-      condition1 = self.is_connected_at(direction)
-      condition2 = self.is_connected_to(room)
-      if condition1 and condition2:
-          return True
-      else:
-          return False
-    
+  def is_connected_to_at(self,direction,room):
+      for edge in self.edges:
+          con_1 = edge["direction"] == direction
+          con_2 = edge["connection"] == room
+          if con_1 and con_2:
+              return True
+
+      return False
 #+END_SRC
 
 ** Moving Between Rooms
@@ -294,16 +323,13 @@ The idea is so that each character, monster, ect has a "position" that is the ro
 #+BEGIN_SRC python 
   def move(self, direction):
 
-      #If none, raises an assertion error signalling that discover is needed
-      
-      assert self.edges[direction] != None
-      return self.edges[direction]
+      for edge in self.edges:
+          if edge["direction"] == direction:
+              assert edge["connection"] != None
+              return edge["connection"]
+      #raise KeyError
+                        
 
-
-#+END_SRC
-
-#+name: MoveErrors
-#+BEGIN_SRC python
 
 #+END_SRC
 
@@ -397,7 +423,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
       def test_discover_method_works(self):
           discovered_room = housemap.Room(
               "Test Room",
-              ["north","east","west"]
+              3
           )
 
           pos = self.MAP[(0,0,0)]
@@ -408,7 +434,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
           self.MAP[(1,0,0)].set_coordnate((1,0,0))
 
           pos.bi_connect('east',self.MAP[(1,0,0)])
-        
+
           pos = self.MAP[pos.move('east')]
 
           self.assertEqual(pos,self.MAP[(1,0,0)],

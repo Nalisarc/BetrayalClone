@@ -70,7 +70,7 @@ class MapUnitTests(unittest.TestCase):
     def test_discover_method_works(self):
         discovered_room = housemap.Room(
             "Test Room",
-            ["north","east","west"]
+            3
         )
 
         pos = self.MAP[(0,0,0)]

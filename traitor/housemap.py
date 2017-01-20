@@ -1,5 +1,20 @@
 class Room(object):
 
+
+    edge_table = [
+        ["north","south"],
+        ["south","north"],
+        ["east","west"],
+        ["west","east"],
+        ["in","out"],
+        ["out","in"],
+        ["up","down"],
+        ["down","up"]
+    ]
+
+    special_directions = ['up','down','in','out']
+
+
     def __init__(self,
                  name,
                  number_of_doors):
@@ -21,11 +36,13 @@ class Room(object):
     def get_coordnate(self):
         return (self.x,self.y,self.z)
 
+    def set_edges(self):
+        pass
+
     
     def connect(self, direction, room):
-        special_directions = ['up','down','in','out']
     
-        if direction in special_directions:
+        if direction in self.special_directions:
             self.edges.append(
                 {"direction": direction,
                  "connection": room.get_coordnate()
@@ -45,18 +62,8 @@ class Room(object):
     
     def bi_connect(self, direction, room):
     
-        edge_table = [
-            ["north","south"],
-            ["south","north"],
-            ["east","west"],
-            ["west","east"],
-            ["in","out"],
-            ["out","in"],
-            ["up","down"],
-            ["down","up"]
-        ]
         opposite_direction = None
-        for d in edge_table:
+        for d in self.edge_table:
             if d[0] == direction:
                 opposite_direction = d[1]
                 break
@@ -98,13 +105,27 @@ class Room(object):
             if edge["direction"] == direction:
                 assert edge["connection"] != None
                 return edge["connection"]
-        #raise KeyError
     
     
     
 
 
 
+class Hall(Room):
+# Halls will never have more than 2 edges in cardinal directions
+    def set_edges(self):
+        pass
+
+
+class T_Shape(Room):
+
+    def set_edges(self):
+        pass
+
+class Corner(Room):
+
+    def set_edges(self):
+        pass
 
 class Map(object):
     def __init__(self):

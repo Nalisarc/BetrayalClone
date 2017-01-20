@@ -188,6 +188,21 @@ Some rooms have special directions that connect to, these go to a specific cordn
  #+BEGIN_SRC python
    class Room(object):
 
+
+       edge_table = [
+           ["north","south"],
+           ["south","north"],
+           ["east","west"],
+           ["west","east"],
+           ["in","out"],
+           ["out","in"],
+           ["up","down"],
+           ["down","up"]
+       ]
+
+       special_directions = ['up','down','in','out']
+
+
        def __init__(self,
                     name,
                     number_of_doors):
@@ -209,12 +224,30 @@ Some rooms have special directions that connect to, these go to a specific cordn
        def get_coordnate(self):
            return (self.x,self.y,self.z)
 
+       def set_edges(self):
+           pass
+
        <<Connect_Rooms>>
        <<Connection_Test_Methods>>
        <<Move_Room>>
 
 
 
+   class Hall(Room):
+   # Halls will never have more than 2 edges in cardinal directions
+       def set_edges(self):
+           pass
+
+
+   class T_Shape(Room):
+
+       def set_edges(self):
+           pass
+
+   class Corner(Room):
+
+       def set_edges(self):
+           pass
  #+END_SRC
  Room objects have a name, a dictonary telling which direction connects to which other room.
  Some rooms have something happen in them either you find a item, an omen, or an event. 
@@ -240,16 +273,15 @@ The connect function binds two rooms together at the opposet edge.
 #+BEGIN_SRC python 
 
   def connect(self, direction, room):
-      special_directions = ['up','down','in','out']
 
-      if direction in special_directions:
+      if direction in self.special_directions:
           self.edges.append(
               {"direction": direction,
                "connection": room.get_coordnate()
               }
               )
           return None
-    
+
       for edge in self.edges:
           if edge["direction"] == None:
               edge["direction"] = direction
@@ -262,18 +294,8 @@ The connect function binds two rooms together at the opposet edge.
 
   def bi_connect(self, direction, room):
 
-      edge_table = [
-          ["north","south"],
-          ["south","north"],
-          ["east","west"],
-          ["west","east"],
-          ["in","out"],
-          ["out","in"],
-          ["up","down"],
-          ["down","up"]
-      ]
       opposite_direction = None
-      for d in edge_table:
+      for d in self.edge_table:
           if d[0] == direction:
               opposite_direction = d[1]
               break
@@ -317,8 +339,10 @@ The connect function binds two rooms together at the opposet edge.
 #+END_SRC
 
 ** Moving Between Rooms
-Room objects have a move method, this takes a direction from their edges table and returns the room object connected.
-The idea is so that each character, monster, ect has a "position" that is the room.
+Room objects have a move method, this takes a direction from their edges table and returns the coordnates.
+The idea is so that each character, monster, ect has a "position" that is the room's coordnates.
+In the event that the room hasn't been discovered, it sends up an assertion error that signals to the engine to discover a room.
+
 #+name: Move_Room
 #+BEGIN_SRC python 
   def move(self, direction):
@@ -327,7 +351,6 @@ The idea is so that each character, monster, ect has a "position" that is the ro
           if edge["direction"] == direction:
               assert edge["connection"] != None
               return edge["connection"]
-      #raise KeyError
                         
 
 
@@ -450,6 +473,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
 
 #+END_SRC
+
 
 * TODO Cards
 ** TODO Items

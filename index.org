@@ -371,6 +371,50 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
 #+END_SRC
 
+** List of Rooms
+#+name: List_of_rooms
+#+BEGIN_SRC python
+  List_of_Rooms = [
+      Room("Chasm",2),
+      Room("Crypt",1),
+      Room("Gallery",2),
+      Room("Pentagram Chamber",1),
+      Room("Attic", 1),
+      Room("Chapel", 1),
+      Room("Collapsed Room",4),
+      Room("Balcony",2),
+      Room("Stairs from Basement",1),
+      Room("Graveyard",1),
+      Room("Gardens",2),
+      Room("Kitchen",2),
+      Room("Vault",1),
+      Room("Mystic Elevator",1),
+      Room("Statuary Corridor",2),
+      Room("Research Laboratory",2),
+      Room("Underground Lake",2),
+      Room("Furnace Room",3),
+      Room("Catacombs",2),
+      Room("Ballroom",4),
+      Room("Game Room",3),
+      Room("Library",2),
+      Room("Charred Room", 4),
+      Room("Abandoned Room", 4),
+      Room("Dining Room", 2),
+      Room("Conservatory",1),
+      Room("Master Bedroom",2),
+      Room("Bloody Room",4),
+      Room("Tower",2),
+      Room("Gymnasium", 2),
+      Room("Operating Laboritory", 2),
+      Room("Coal Chute",1),
+      Room("Bedroom", 2),
+      Room("Balcony",2),
+      Room("Junk Room",2),
+      Room("Creaky Hallway",4)
+      ]
+
+#+END_SRC
+
 ** Tests
 #+name: Map_Tests
 #+BEGIN_SRC python :tangle tests/map_tests.py 
@@ -473,7 +517,6 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
 
 #+END_SRC
-
 
 * TODO Cards
 ** TODO Items

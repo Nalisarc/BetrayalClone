@@ -111,21 +111,6 @@ class Room(object):
 
 
 
-class Hall(Room):
-# Halls will never have more than 2 edges in cardinal directions
-    def set_edges(self):
-        pass
-
-
-class T_Shape(Room):
-
-    def set_edges(self):
-        pass
-
-class Corner(Room):
-
-    def set_edges(self):
-        pass
 
 class Map(object):
     def __init__(self):

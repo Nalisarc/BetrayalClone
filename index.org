@@ -9,7 +9,13 @@
 #+BEGIN_SRC python :noweb yes 
   class Character(object):
 
-      def __init__(self):
+      def __init__(self,
+                   name,
+                   birthday,
+                   might,
+                   speed,
+                   knowledge,
+                   sanity):
 
           self.name = name
           self.birthday = birthday
@@ -23,9 +29,6 @@
 
           #Inventory
           self.inventory = []
-
-          #Position
-          self.position = (0,0,0)
 
       <<Character_Change_Stat>>
 
@@ -97,6 +100,77 @@ This will be handled by the engine not the character object.
 Characters have some bits of miscellaneous information in addition to their core statistics.
 This includes the name of the character, their age, birthday, hobbies, and other bits.
 While it may seem a bit odd this information is used to determine player order, and in haunts.
+
+** Character List
+A list of the built in characters.
+#+name: Character_List
+#+BEGIN_SRC python
+  Character_List = [
+      Character(
+          'Dillion "Zoom" Francis',
+          "06/06",
+          {'range':['dead',2,3,3,4,5,6,6,7],
+           'starting': 3,
+           'current': 3},
+          {'range':['dead',4,4,4,5,6,7,7,8],
+           'starting': 5,
+           'current': 5},
+          {'range':['dead',2,3,3,4,5,5,5,7],
+           'starting': 3,
+           'current': 3},
+          {'range':['dead',1,2,3,4,5,5,5,7],
+           'starting': 3,
+           'current': 3}),
+      Character(
+          'Barry Bovine',
+          "10/18",
+          {'range':['dead',4,5,5,6,6,7,8,8],
+           'starting': 3,
+           'current': 3},
+          {'range':['dead',2,2,2,3,4,5,5,6],
+           'starting': 5,
+           'current': 5},
+          {'range':['dead',2,2,3,3,5,5,6,6],
+           'starting': 3,
+           'current': 3},
+          {'range':['dead',2,2,3,4,5,5,6,7],
+           'starting': 3,
+           'current': 3}),
+      Character(
+          'Madame Zoltera',
+          "12/10",
+          {'range':['dead',2,3,3,4,5,5,5,6],
+           'starting': 4,
+           'current': 4},
+          {'range':['dead',2,3,3,5,5,6,6,7],
+           'starting': 3,
+           'current': 3},
+          {'range':['dead',1,3,4,4,4,5,6,6],
+           'starting': 4,
+           'current': 4},
+          {'range':['dead',4,4,4,5,6,7,8,8],
+           'starting': 3,
+           'current': 3}),
+      Character(
+          'Vivian Martinez',
+          "06/06",
+          {'range':['dead',2,2,2,4,4,5,6,6],
+           'starting': 3,
+           'current': 3},
+          {'range':['dead',3,4,4,4,4,6,7,8],
+           'starting': 4,
+           'current': 4},
+          {'range':['dead',4,5,5,5,5,6,6,7],
+           'starting': 4,
+           'current': 4},
+          {'range':['dead',4,4,4,5,6,7,8,8],
+           'starting': 3,
+           'current': 3}),
+
+
+
+
+#+END_SRC
 
 * TODO Rooms
 The house in Traitor is never the same.
@@ -233,21 +307,6 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
 
 
-   class Hall(Room):
-   # Halls will never have more than 2 edges in cardinal directions
-       def set_edges(self):
-           pass
-
-
-   class T_Shape(Room):
-
-       def set_edges(self):
-           pass
-
-   class Corner(Room):
-
-       def set_edges(self):
-           pass
  #+END_SRC
  Room objects have a name, a dictonary telling which direction connects to which other room.
  Some rooms have something happen in them either you find a item, an omen, or an event. 

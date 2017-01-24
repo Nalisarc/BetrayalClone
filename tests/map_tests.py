@@ -67,14 +67,14 @@ class MapUnitTests(unittest.TestCase):
             self.assertEqual(pos,self.MAP[(0,0,0)])
 
 
-    def test_discover_method_works(self):
+    def test_can_spawn_new_rooms(self):
         discovered_room = housemap.Room(
             "Test Room",
             3
         )
 
         pos = self.MAP[(0,0,0)]
-        self.house.discover(
+        self.house.spawn_room(
             (1,0,0),
             discovered_room
         )

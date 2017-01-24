@@ -1,18 +1,18 @@
 class Room(object):
 
 
-    edge_table = [
-        ["north","south"],
-        ["south","north"],
-        ["east","west"],
-        ["west","east"],
-        ["in","out"],
-        ["out","in"],
-        ["up","down"],
-        ["down","up"]
-    ]
-
+    cardinal_directions = ['north','south','east','west']
     special_directions = ['up','down','in','out']
+    edge_table = [
+        ['north','south'],
+        ['south','north'],
+        ['east','west'],
+        ['west','east'],
+        ['up','down'],
+        ['down','up'],
+        ['in','out'],
+        ['out','in']]
+
 
 
     def __init__(self,
@@ -37,7 +37,10 @@ class Room(object):
         return (self.x,self.y,self.z)
 
     def set_edges(self):
-        pass
+        for r, d in zip(self.edges, self.cardinal_directions):
+            r['direction'] = d
+        return None
+
 
     
     def connect(self, direction, room):
@@ -51,10 +54,17 @@ class Room(object):
             return None
     
         for edge in self.edges:
+            if edge["direction"] == direction:
+                edge["connection"] = room.get_coordnate()
+                return None
+            else:
+                pass
+    
+        for edge in self.edges:
             if edge["direction"] == None:
                 edge["direction"] = direction
                 edge["connection"] = room.get_coordnate()
-                break
+                return None
             else:
                 pass
     
@@ -105,12 +115,51 @@ class Room(object):
             if edge["direction"] == direction:
                 assert edge["connection"] != None
                 return edge["connection"]
+        raise KeyError
     
     
     
 
 
 
+List_of_Rooms = [
+    Room("Chasm",2),
+    Room("Crypt",1),
+    Room("Gallery",2),
+    Room("Pentagram Chamber",1),
+    Room("Attic", 1),
+    Room("Chapel", 1),
+    Room("Collapsed Room",4),
+    Room("Balcony",2),
+    Room("Stairs from Basement",1),
+    Room("Graveyard",1),
+    Room("Gardens",2),
+    Room("Kitchen",2),
+    Room("Vault",1),
+    Room("Mystic Elevator",1),
+    Room("Statuary Corridor",2),
+    Room("Research Laboratory",2),
+    Room("Underground Lake",2),
+    Room("Furnace Room",3),
+    Room("Catacombs",2),
+    Room("Ballroom",4),
+    Room("Game Room",3),
+    Room("Library",2),
+    Room("Charred Room", 4),
+    Room("Abandoned Room", 4),
+    Room("Dining Room", 2),
+    Room("Conservatory",1),
+    Room("Master Bedroom",2),
+    Room("Bloody Room",4),
+    Room("Tower",2),
+    Room("Gymnasium", 2),
+    Room("Operating Laboritory", 2),
+    Room("Coal Chute",1),
+    Room("Bedroom", 2),
+    Room("Balcony",2),
+    Room("Junk Room",2),
+    Room("Creaky Hallway",4)
+    ]
 
 class Map(object):
     def __init__(self):
@@ -145,6 +194,7 @@ class Map(object):
 
         for room in MAP:
             MAP[room].set_coordnate(room)
+            MAP[room].set_edges()
 
 
         MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
@@ -157,6 +207,6 @@ class Map(object):
         self.MAP = MAP
 
     
-    def discover(self,coordnate, room):
-    
+    def spawn_room(self, coordnate, room):
         self.MAP[coordnate] = room
+        return None

@@ -95,7 +95,6 @@ Should a character take lethal damage before the haunt has started, the damage i
 This will be handled by the engine not the character object.
 
 
-
 ** Miscellaneous Information 
 Characters have some bits of miscellaneous information in addition to their core statistics.
 This includes the name of the character, their age, birthday, hobbies, and other bits.
@@ -203,7 +202,7 @@ Some rooms have special directions that connect to, these go to a specific cordn
 #+name: Map
 #+BEGIN_SRC python :noweb yes  :tangle traitor/housemap.py 
   <<Room_Object>>
-
+  <<List_of_Rooms>>
   class Map(object):
       def __init__(self):
           MAP = {}
@@ -233,10 +232,11 @@ Some rooms have special directions that connect to, these go to a specific cordn
               "Basement Landing",
               4
           )
-            
+
 
           for room in MAP:
               MAP[room].set_coordnate(room)
+              MAP[room].set_edges()
 
 
           MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
@@ -263,18 +263,18 @@ Some rooms have special directions that connect to, these go to a specific cordn
    class Room(object):
 
 
-       edge_table = [
-           ["north","south"],
-           ["south","north"],
-           ["east","west"],
-           ["west","east"],
-           ["in","out"],
-           ["out","in"],
-           ["up","down"],
-           ["down","up"]
-       ]
-
+       cardinal_directions = ['north','south','east','west']
        special_directions = ['up','down','in','out']
+       edge_table = [
+           ['north','south'],
+           ['south','north'],
+           ['east','west'],
+           ['west','east'],
+           ['up','down'],
+           ['down','up'],
+           ['in','out'],
+           ['out','in']]
+
 
 
        def __init__(self,
@@ -299,7 +299,10 @@ Some rooms have special directions that connect to, these go to a specific cordn
            return (self.x,self.y,self.z)
 
        def set_edges(self):
-           pass
+           for r, d in zip(self.edges, self.cardinal_directions):
+               r['direction'] = d
+           return None
+        
 
        <<Connect_Rooms>>
        <<Connection_Test_Methods>>
@@ -340,12 +343,19 @@ The connect function binds two rooms together at the opposet edge.
               }
               )
           return None
+    
+      for edge in self.edges:
+          if edge["direction"] == direction:
+              edge["connection"] = room.get_coordnate()
+              return None
+          else:
+              pass
 
       for edge in self.edges:
           if edge["direction"] == None:
               edge["direction"] = direction
               edge["connection"] = room.get_coordnate()
-              break
+              return None
           else:
               pass
 
@@ -410,7 +420,8 @@ In the event that the room hasn't been discovered, it sends up an assertion erro
           if edge["direction"] == direction:
               assert edge["connection"] != None
               return edge["connection"]
-                        
+      raise KeyError
+
 
 
 #+END_SRC
@@ -423,15 +434,17 @@ If the newly discoved room has an event in it, the player must stop moving and a
 #+name: map_discover
 #+BEGIN_SRC python
 
-  def discover(self,coordnate, room):
-
+  def spawn_room(self, coordnate, room):
       self.MAP[coordnate] = room
-    
+      return None
+
+
+
 
 #+END_SRC
 
 ** List of Rooms
-#+name: List_of_rooms
+#+name: List_of_Rooms
 #+BEGIN_SRC python
   List_of_Rooms = [
       Room("Chasm",2),
@@ -546,14 +559,14 @@ If the newly discoved room has an event in it, the player must stop moving and a
               self.assertEqual(pos,self.MAP[(0,0,0)])
 
 
-      def test_discover_method_works(self):
+      def test_can_spawn_new_rooms(self):
           discovered_room = housemap.Room(
               "Test Room",
               3
           )
 
           pos = self.MAP[(0,0,0)]
-          self.house.discover(
+          self.house.spawn_room(
               (1,0,0),
               discovered_room
           )
@@ -589,7 +602,6 @@ We start putting things together here in the engine
   import sys
   import housemap
   <<Character_Object>>
-
   house = housemap.Map()
 
   class player(object):
@@ -641,11 +653,10 @@ We start putting things together here in the engine
                   print(self.pos.name, self.pos.get_coordnate())
               except KeyError:
 
-                  self.house.discover((x,y,z),housemap.Room(
-                      "test room",
-                      ['north','south','east','west'])
-                  )
+                  self.house.spawn_room((x,y,z),
+					housemap.List_of_Rooms.pop())
                   self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
+                  self.house.MAP[(x,y,z)].set_edges()
                   self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
                   self.pos = self.house.MAP[self.pos.move(direction)]
                   print(self.pos.name, self.pos.get_coordnate())

@@ -3,7 +3,13 @@ import sys
 import housemap
 class Character(object):
 
-    def __init__(self):
+    def __init__(self,
+                 name,
+                 birthday,
+                 might,
+                 speed,
+                 knowledge,
+                 sanity):
 
         self.name = name
         self.birthday = birthday
@@ -18,9 +24,6 @@ class Character(object):
         #Inventory
         self.inventory = []
 
-        #Position
-        self.position = (0,0,0)
-
     def change_stat(self, stat, value):
         """To raise the stat use a positive integer, 
         to lower the stat use a negative integer"""
@@ -33,7 +36,6 @@ class Character(object):
             self.stat['current'] = 8
         #Change sucessful
         return None
-
 
 house = housemap.Map()
 
@@ -86,11 +88,10 @@ class player(object):
                 print(self.pos.name, self.pos.get_coordnate())
             except KeyError:
 
-                self.house.discover((x,y,z),housemap.Room(
-                    "test room",
-                    ['north','south','east','west'])
-                )
+                self.house.spawn_room((x,y,z),
+				      housemap.List_of_Rooms.pop())
                 self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
+                self.house.MAP[(x,y,z)].set_edges()
                 self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
                 self.pos = self.house.MAP[self.pos.move(direction)]
                 print(self.pos.name, self.pos.get_coordnate())

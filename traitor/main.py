@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import housemap
+import random
 class Character(object):
 
     def __init__(self,
@@ -38,7 +39,7 @@ class Character(object):
         return None
 
 house = housemap.Map()
-
+random.shuffle(housemap.List_of_Rooms)
 class player(object):
 
     def __init__(self, house):

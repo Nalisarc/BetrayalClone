@@ -37,9 +37,9 @@ class Room(object):
         return (self.x,self.y,self.z)
 
     def set_edges(self):
-        for r, d in zip(self.edges, self.cardinal_directions):
-            r['direction'] = d
-        return None
+        for edge in self.edges:
+            edge['direction'] = self.cardinal_directions
+
 
 
     
@@ -52,23 +52,16 @@ class Room(object):
                 }
                 )
             return None
-    
         for edge in self.edges:
-            if edge["direction"] == direction:
-                edge["connection"] = room.get_coordnate()
+            if direction in edge['direction']:
+                edge['direction'] = direction
+                edge['connection'] = room.get_coordnate()
+                self.remove_direction_from_avaliable(direction)
                 return None
             else:
                 pass
     
-        for edge in self.edges:
-            if edge["direction"] == None:
-                edge["direction"] = direction
-                edge["connection"] = room.get_coordnate()
-                return None
-            else:
-                pass
     
-        return None
     
     def bi_connect(self, direction, room):
     
@@ -87,6 +80,23 @@ class Room(object):
     
     
     
+    
+    def remove_direction_from_avaliable(self, direction):
+        """
+        Lifted with some modification from:
+        http://stackoverflow.com/a/4915964/1748672
+        Thank you Paulo Scardine
+        """
+        try:
+            for edge in self.edges:
+                if type(edge['direction']) == list:
+                    edge['direction'].remove(direction)
+                else:
+                    pass
+        except ValueError:
+            pass #Mark the error in a log file later
+        except AttributeError:
+            pass #Mark the error in a log file later
     
     def is_connected_at(self, direction):
         for edge in self.edges:
@@ -115,7 +125,7 @@ class Room(object):
             if edge["direction"] == direction:
                 assert edge["connection"] != None
                 return edge["connection"]
-        raise KeyError
+    
     
     
     

@@ -56,7 +56,7 @@ class Room(object):
             if direction in edge['direction']:
                 edge['direction'] = direction
                 edge['connection'] = room.get_coordnate()
-                self.remove_direction_from_avaliable(direction)
+                self.remove_direction_from_avaliable()
                 return None
             else:
                 pass
@@ -81,18 +81,24 @@ class Room(object):
     
     
     
-    def remove_direction_from_avaliable(self, direction):
+    def remove_direction_from_avaliable(self):
         """
         Lifted with some modification from:
         http://stackoverflow.com/a/4915964/1748672
         Thank you Paulo Scardine
         """
         try:
+            to_remove = ""
             for edge in self.edges:
-                if type(edge['direction']) == list:
-                    edge['direction'].remove(direction)
-                else:
-                    pass
+                if type(edge['direction']) == str:
+                    to_remove = edge['direction']
+            for edge in self.edges:
+                if type(edge['direction']) == str:
+                    break
+                elif type(edge['direction']) == list:
+                    edge['direction'].remove(to_remove)
+            return None
+    
         except ValueError:
             pass #Mark the error in a log file later
         except AttributeError:
@@ -125,6 +131,8 @@ class Room(object):
             if edge["direction"] == direction:
                 assert edge["connection"] != None
                 return edge["connection"]
+            if direction in edge['direction']:
+                raise AssertionError
     
     
     

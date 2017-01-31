@@ -1,8 +1,14 @@
 #+Title: Traitor
 #+author: Daniel Alexander Smith
 #+email: nalisarc@gmail.com
-* TODO Readme
-* TODO License
+* Readme
+Traitor, is a personal project to transform the board game Betrayal on the House on the Hill by Bruce Glasses
+into a computer program. I started writing this for the #100daysofcode challenge. While the main program is written
+in python. Due to the nature of the style of document that this is written in. You could potentially conver the code into 
+any language with a bit of work.
+You can build your own copy of the game by opening index.org in emacs, and running entering C-c C-v C-t.
+
+* Licence
 * TODO Characters
 ** Character Object
 #+name: Character_Object
@@ -201,8 +207,11 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
 #+name: Map
 #+BEGIN_SRC python :noweb yes  :tangle traitor/housemap.py 
+  from itertools import cycle
+
   <<Room_Object>>
   <<List_of_Rooms>>
+
   class Map(object):
       def __init__(self):
           MAP = {}
@@ -220,7 +229,7 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
           MAP[(0,2,0)] =  Room(
               "Grand Staircase",
-              4
+              1
           )
 
           MAP[(0,0,1)] = Room(
@@ -258,6 +267,12 @@ Some rooms have special directions that connect to, these go to a specific cordn
 #+RESULTS: Map
 
 ** Room Object
+The room object is the representation of a room tile. It contains information about the tile and methods for accessing and changing the data
+In the end the room object could be represented with a table.
+
+| Room #  | Name           | Number of Doors | Connections | Rotation |
+|---------+----------------+-----------------+-------------+----------|
+| (0,0,0) | Enterance Hall |               3 |             |        0 |
  #+name: Room_Object
  #+BEGIN_SRC python
    class Room(object):
@@ -277,18 +292,23 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
 
 
+
        def __init__(self,
                     name,
-                    number_of_doors):
+                    number_of_doors=4,
+                    rotation=0):
 
            self.name = name
            self.edges = []
-
+           if rotation % 90 != 0:
+               raise ValueError
+           self.rotation = rotation
            for d in range(number_of_doors):
                self.edges.append({
                    "direction": None,
-                   "connection": None
+                   "connection": None,
                })
+
 
 
        def set_coordnate(self,coordnate):
@@ -300,7 +320,8 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
        def set_edges(self):
            for edge in self.edges:
-               edge['direction'] = self.cardinal_directions
+               edge['direction'] = list(self.cardinal_directions)
+           return None
 
 
 
@@ -311,10 +332,8 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
 
  #+END_SRC
- Room objects have a name, a dictonary telling which direction connects to which other room.
- Some rooms have something happen in them either you find a item, an omen, or an event. 
- This is stored in the card value.
-** COMMENT Connecting Rooms
+
+** Connecting Rooms
 The connect function binds two rooms together at the opposet edge.
 
 #+name: edge_table
@@ -347,7 +366,6 @@ The connect function binds two rooms together at the opposet edge.
           if direction in edge['direction']:
               edge['direction'] = direction
               edge['connection'] = room.get_coordnate()
-              self.remove_direction_from_avaliable()
               return None
           else:
               pass
@@ -370,30 +388,6 @@ The connect function binds two rooms together at the opposet edge.
       room.connect(opposite_direction, self)
 
 
-
-
-  def remove_direction_from_avaliable(self):
-      """
-      Lifted with some modification from:
-      http://stackoverflow.com/a/4915964/1748672
-      Thank you Paulo Scardine
-      """
-      try:
-          to_remove = ""
-          for edge in self.edges:
-              if type(edge['direction']) == str:
-                  to_remove = edge['direction']
-          for edge in self.edges:
-              if type(edge['direction']) == str:
-                  break
-              elif type(edge['direction']) == list:
-                  edge['direction'].remove(to_remove)
-          return None
-
-      except ValueError:
-          pass #Mark the error in a log file later
-      except AttributeError:
-          pass #Mark the error in a log file later
 
 #+END_SRC
 

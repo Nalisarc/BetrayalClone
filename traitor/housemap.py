@@ -1,3 +1,5 @@
+from itertools import cycle
+
 class Room(object):
 
 
@@ -15,18 +17,23 @@ class Room(object):
 
 
 
+
     def __init__(self,
                  name,
-                 number_of_doors):
+                 number_of_doors=4,
+                 rotation=0):
 
         self.name = name
         self.edges = []
-
+        if rotation % 90 != 0:
+            raise ValueError
+        self.rotation = rotation
         for d in range(number_of_doors):
             self.edges.append({
                 "direction": None,
-                "connection": None
+                "connection": None,
             })
+
 
 
     def set_coordnate(self,coordnate):
@@ -38,7 +45,8 @@ class Room(object):
 
     def set_edges(self):
         for edge in self.edges:
-            edge['direction'] = self.cardinal_directions
+            edge['direction'] = list(self.cardinal_directions)
+        return None
 
 
 
@@ -56,7 +64,6 @@ class Room(object):
             if direction in edge['direction']:
                 edge['direction'] = direction
                 edge['connection'] = room.get_coordnate()
-                self.remove_direction_from_avaliable()
                 return None
             else:
                 pass
@@ -79,30 +86,6 @@ class Room(object):
         room.connect(opposite_direction, self)
     
     
-    
-    
-    def remove_direction_from_avaliable(self):
-        """
-        Lifted with some modification from:
-        http://stackoverflow.com/a/4915964/1748672
-        Thank you Paulo Scardine
-        """
-        try:
-            to_remove = ""
-            for edge in self.edges:
-                if type(edge['direction']) == str:
-                    to_remove = edge['direction']
-            for edge in self.edges:
-                if type(edge['direction']) == str:
-                    break
-                elif type(edge['direction']) == list:
-                    edge['direction'].remove(to_remove)
-            return None
-    
-        except ValueError:
-            pass #Mark the error in a log file later
-        except AttributeError:
-            pass #Mark the error in a log file later
     
     def is_connected_at(self, direction):
         for edge in self.edges:
@@ -179,6 +162,7 @@ List_of_Rooms = [
     Room("Creaky Hallway",4)
     ]
 
+
 class Map(object):
     def __init__(self):
         MAP = {}
@@ -196,7 +180,7 @@ class Map(object):
 
         MAP[(0,2,0)] =  Room(
             "Grand Staircase",
-            4
+            1
         )
 
         MAP[(0,0,1)] = Room(

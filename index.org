@@ -210,7 +210,6 @@ Some rooms have special directions that connect to, these go to a specific cordn
   from itertools import cycle
 
   <<Room_Object>>
-  <<List_of_Rooms>>
 
   class Map(object):
       def __init__(self):
@@ -218,28 +217,28 @@ Some rooms have special directions that connect to, these go to a specific cordn
 
           MAP[(0,0,0)]= Room(
               "Entrance Hall",
-              3
+              (True,True,False,True)
           )
 
           MAP[(0,1,0)] = Room(
               "Foyer",
-              4
+              #Blank means all doors enabled
           )
 
 
           MAP[(0,2,0)] =  Room(
               "Grand Staircase",
-              1
+              (False,False,True,False)
           )
 
           MAP[(0,0,1)] = Room(
               "Upper Landing",
-              4
+            
           )
 
           MAP[(0,0,-1)] = Room(
               "Basement Landing",
-              4
+            
           )
 
 
@@ -270,9 +269,6 @@ Some rooms have special directions that connect to, these go to a specific cordn
 The room object is the representation of a room tile. It contains information about the tile and methods for accessing and changing the data
 In the end the room object could be represented with a table.
 
-| Room #  | Name           | Number of Doors | Connections | Rotation |
-|---------+----------------+-----------------+-------------+----------|
-| (0,0,0) | Enterance Hall |               3 |             |        0 |
  #+name: Room_Object
  #+BEGIN_SRC python
    class Room(object):
@@ -293,23 +289,40 @@ In the end the room object could be represented with a table.
 
 
 
+
        def __init__(self,
                     name,
-                    number_of_doors=4,
-                    rotation=0):
-
+                    shape=(True, True, True, True)):
            self.name = name
+           self.shape = shape
+
            self.edges = []
-           if rotation % 90 != 0:
+           for edge in shape:
+               self.edges.append(
+                   {"direction": None,
+                    "connection": None,
+                    "enabled": edge
+                    })
+
+       def set_edges(self, rotation=0):
+           """
+           Rotation is an integer between 0-3.
+           Anything higher is redundant and any < 0 will cause trouble.
+           """
+           if rotation < 0:
                raise ValueError
-           self.rotation = rotation
-           for d in range(number_of_doors):
-               self.edges.append({
-                   "direction": None,
-                   "connection": None,
-               })
 
+           direction_wheel = cycle(self.cardinal_directions)
 
+           for n in range(int(rotation)):
+               direction_wheel.__next__()
+               continue
+
+           for edge in self.edges:
+               edge['direction'] = direction_wheel.__next__()
+               continue
+
+           return None
 
        def set_coordnate(self,coordnate):
            self.x,self.y,self.z = coordnate
@@ -317,13 +330,6 @@ In the end the room object could be represented with a table.
 
        def get_coordnate(self):
            return (self.x,self.y,self.z)
-
-       def set_edges(self):
-           for edge in self.edges:
-               edge['direction'] = list(self.cardinal_directions)
-           return None
-
-
 
        <<Connect_Rooms>>
        <<Connection_Test_Methods>>
@@ -576,7 +582,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
       def test_can_spawn_new_rooms(self):
           discovered_room = housemap.Room(
               "Test Room",
-              3
+              
           )
 
 

@@ -72,7 +72,7 @@ class MapUnitTests(unittest.TestCase):
     def test_can_spawn_new_rooms(self):
         discovered_room = housemap.Room(
             "Test Room",
-            3
+
         )
 
 

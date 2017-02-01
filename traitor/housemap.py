@@ -18,23 +18,40 @@ class Room(object):
 
 
 
+
     def __init__(self,
                  name,
-                 number_of_doors=4,
-                 rotation=0):
-
+                 shape=(True, True, True, True)):
         self.name = name
+        self.shape = shape
+
         self.edges = []
-        if rotation % 90 != 0:
+        for edge in shape:
+            self.edges.append(
+                {"direction": None,
+                 "connection": None,
+                 "enabled": edge
+                 })
+
+    def set_edges(self, rotation=0):
+        """
+        Rotation is an integer between 0-3.
+        Anything higher is redundant and any < 0 will cause trouble.
+        """
+        if rotation < 0:
             raise ValueError
-        self.rotation = rotation
-        for d in range(number_of_doors):
-            self.edges.append({
-                "direction": None,
-                "connection": None,
-            })
 
+        direction_wheel = cycle(self.cardinal_directions)
 
+        for n in range(int(rotation)):
+            direction_wheel.__next__()
+            continue
+
+        for edge in self.edges:
+            edge['direction'] = direction_wheel.__next__()
+            continue
+
+        return None
 
     def set_coordnate(self,coordnate):
         self.x,self.y,self.z = coordnate
@@ -42,13 +59,6 @@ class Room(object):
 
     def get_coordnate(self):
         return (self.x,self.y,self.z)
-
-    def set_edges(self):
-        for edge in self.edges:
-            edge['direction'] = list(self.cardinal_directions)
-        return None
-
-
 
     
     def connect(self, direction, room):
@@ -123,45 +133,6 @@ class Room(object):
 
 
 
-List_of_Rooms = [
-    Room("Chasm",2),
-    Room("Crypt",1),
-    Room("Gallery",2),
-    Room("Pentagram Chamber",1),
-    Room("Attic", 1),
-    Room("Chapel", 1),
-    Room("Collapsed Room",4),
-    Room("Balcony",2),
-    Room("Stairs from Basement",1),
-    Room("Graveyard",1),
-    Room("Gardens",2),
-    Room("Kitchen",2),
-    Room("Vault",1),
-    Room("Mystic Elevator",1),
-    Room("Statuary Corridor",2),
-    Room("Research Laboratory",2),
-    Room("Underground Lake",2),
-    Room("Furnace Room",3),
-    Room("Catacombs",2),
-    Room("Ballroom",4),
-    Room("Game Room",3),
-    Room("Library",2),
-    Room("Charred Room", 4),
-    Room("Abandoned Room", 4),
-    Room("Dining Room", 2),
-    Room("Conservatory",1),
-    Room("Master Bedroom",2),
-    Room("Bloody Room",4),
-    Room("Tower",2),
-    Room("Gymnasium", 2),
-    Room("Operating Laboritory", 2),
-    Room("Coal Chute",1),
-    Room("Bedroom", 2),
-    Room("Balcony",2),
-    Room("Junk Room",2),
-    Room("Creaky Hallway",4)
-    ]
-
 
 class Map(object):
     def __init__(self):
@@ -169,28 +140,28 @@ class Map(object):
 
         MAP[(0,0,0)]= Room(
             "Entrance Hall",
-            3
+            (True,True,False,True)
         )
 
         MAP[(0,1,0)] = Room(
             "Foyer",
-            4
+            #Blank means all doors enabled
         )
 
 
         MAP[(0,2,0)] =  Room(
             "Grand Staircase",
-            1
+            (False,False,True,False)
         )
 
         MAP[(0,0,1)] = Room(
             "Upper Landing",
-            4
+
         )
 
         MAP[(0,0,-1)] = Room(
             "Basement Landing",
-            4
+
         )
 
 

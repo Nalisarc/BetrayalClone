@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 import sys
-import housemap
-import random
-house = housemap.Map()
-random.shuffle(housemap.List_of_Rooms)
+import house
 class player(object):
 
-    def __init__(self, house):
+    def __init__(self):
 
-        self.house = house
-        self.pos = self.house.MAP[(0,0,0)]
+        self.pos = house.MAP[(0,0,0)]
         return None
 
     def repl(self):
@@ -62,7 +58,7 @@ class player(object):
             except KeyError:
 
                 self.house.spawn_room((x,y,z),
-				      housemap.List_of_Rooms.pop())
+				      house.List_of_Rooms.pop())
                 self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
                 self.house.MAP[(x,y,z)].set_edges()
                 self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])

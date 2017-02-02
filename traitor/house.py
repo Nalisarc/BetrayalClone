@@ -1,19 +1,19 @@
-from itertools import cycle
-
+import itertools
+import random
 class Room(object):
 
 
-    cardinal_directions = ['north','south','east','west']
-    special_directions = ['up','down','in','out']
-    edge_table = [
-        ['north','south'],
-        ['south','north'],
-        ['east','west'],
-        ['west','east'],
-        ['up','down'],
-        ['down','up'],
-        ['in','out'],
-        ['out','in']]
+    cardinal_directions = ('north','east','south','west')
+    special_directions = ('up','down','in','out')
+    edge_table = (
+        ('north','south'),
+        ('south','north'),
+        ('east','west'),
+        ('west','east'),
+        ('up','down'),
+        ('down','up'),
+        ('in','out'),
+        ('out','in'))
 
 
 
@@ -21,9 +21,11 @@ class Room(object):
 
     def __init__(self,
                  name,
-                 shape=(True, True, True, True)):
+                 shape=(True, True, True, True),
+                 allowed_floors=(-1,0,1)):
         self.name = name
         self.shape = shape
+        self.allowed_floors = allowed_floors
 
         self.edges = []
         for edge in shape:
@@ -41,7 +43,7 @@ class Room(object):
         if rotation < 0:
             raise ValueError
 
-        direction_wheel = cycle(self.cardinal_directions)
+        direction_wheel = itertools.cycle(self.cardinal_directions)
 
         for n in range(int(rotation)):
             direction_wheel.__next__()
@@ -134,52 +136,47 @@ class Room(object):
 
 
 
-class Map(object):
-    def __init__(self):
-        MAP = {}
-
-        MAP[(0,0,0)]= Room(
-            "Entrance Hall",
-            (True,True,False,True)
-        )
-
-        MAP[(0,1,0)] = Room(
-            "Foyer",
-            #Blank means all doors enabled
-        )
-
-
-        MAP[(0,2,0)] =  Room(
-            "Grand Staircase",
-            (False,False,True,False)
-        )
-
-        MAP[(0,0,1)] = Room(
-            "Upper Landing",
-
-        )
-
-        MAP[(0,0,-1)] = Room(
-            "Basement Landing",
-
-        )
-
-
-        for room in MAP:
-            MAP[room].set_coordnate(room)
-            MAP[room].set_edges()
-
-
-        MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
-        MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
-        MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
+def spawn_room(coordnate, room):
+    MAP[coordnate] = room
+    return None
 
 
 
 
-        self.MAP = MAP
+MAP = {}
 
-    
-    def spawn_room(self, coordnate, room):
-        self.MAP[coordnate] = room
-        return None
+MAP[(0,0,0)]= Room(
+    "Entrance Hall",
+    (True,True,False,True)
+)
+
+MAP[(0,1,0)] = Room(
+    "Foyer",
+    #Blank means all doors enabled
+)
+
+
+MAP[(0,2,0)] =  Room(
+    "Grand Staircase",
+    (False,False,True,False)
+)
+
+MAP[(0,0,1)] = Room(
+    "Upper Landing",
+
+)
+
+MAP[(0,0,-1)] = Room(
+    "Basement Landing",
+
+)
+
+
+for room in MAP:
+    MAP[room].set_coordnate(room)
+    MAP[room].set_edges()
+
+
+MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
+MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
+MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])

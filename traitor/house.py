@@ -124,10 +124,8 @@ class Room(object):
     
         for edge in self.edges:
             if edge["direction"] == direction:
-                assert edge["connection"] != None
+                assert edge["enabled"] != False
                 return edge["connection"]
-            if direction in edge['direction']:
-                raise AssertionError
     
     
     

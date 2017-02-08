@@ -9,10 +9,10 @@ any language with a bit of work.
 You can build your own copy of the game by opening index.org in emacs, and running entering C-c C-v C-t.
 
 * Licence
-* TODO Characters
+* Characters
 ** Character Object
 #+name: Character_Object
-#+BEGIN_SRC python :noweb yes 
+#+BEGIN_SRC python :noweb yes :tangle traitor/character.py 
   class Character(object):
 
       def __init__(self,
@@ -36,7 +36,8 @@ You can build your own copy of the game by opening index.org in emacs, and runni
           #Inventory
           self.inventory = []
 
-      <<Character_Change_Stat>>
+
+  <<Stat_Object>>
 
 #+END_SRC
 ** Statistics
@@ -50,14 +51,22 @@ The remaining stats represent the number of dice that are roled for that type of
 The speed stat is also used to tell how many spaces a character can move per turn.
 #+name: Statistic_Example
 #+BEGIN_SRC python :exports code 
-  might = {
-      'range': ('dead',1,2,3,4,5,5,6,6)
-      'starting': 3
-      'current': 3
-      }
+  might = 
 #+END_SRC
 There might be some confusion about what the starting and current values mean.
 These reference the range tuple slot, not the actual value itself. 
+#+name: Stat_Object
+#+BEGIN_SRC python
+  class Stat(object):
+
+      def __init__(self, range_, current):
+          self.range_ = ('dead') + range_
+          self.current = current
+          return None
+
+    
+
+#+END_SRC
 
 ** Changing Stats
 Sometimes in the game your characters will take damage.
@@ -100,6 +109,7 @@ The highest value is 8 and additional points are negated.
 Should a character take lethal damage before the haunt has started, the damage is negated and the stat is set to 1
 This will be handled by the engine not the character object.
 
+** Getting the stat value
 
 ** Miscellaneous Information 
 Characters have some bits of miscellaneous information in addition to their core statistics.
@@ -177,6 +187,12 @@ A list of the built in characters.
 
 #+END_SRC
 
+** Tests
+#+BEGIN_SRC python :tangle tests/character_tests.py
+
+  import unittest
+#+END_SRC
+
 * TODO Rooms
 
 ** Map
@@ -209,8 +225,9 @@ are located at (0,0,1) and (0,0,-1) respectively. And rooms like the collapsed r
 the map. However if the basement had not been explored yet, it could lead to situations where the players become trapped and never able to
 return upstairs. To prevent this, up and down will also be treated like in and out. 
 
-If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least on door is free.
+If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
 If there are no more rooms to discover but there are still open doors, those doors become disabled.
+
 
 #+name: Map
 #+BEGIN_SRC python :noweb yes  :tangle traitor/house.py 
@@ -433,10 +450,8 @@ In the event that the room hasn't been discovered, it sends up an assertion erro
 
       for edge in self.edges:
           if edge["direction"] == direction:
-              assert edge["connection"] != None
+              assert edge["enabled"] != False
               return edge["connection"]
-          if direction in edge['direction']:
-              raise AssertionError
 
 
 
@@ -646,6 +661,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
 ** TODO Omens
 
 * TODO Haunts
+* Dice and other Utilities 
 * Engine
 We start putting things together here in the engine
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes  :shebang #!/usr/bin/env python3

@@ -456,6 +456,14 @@ In the event that the room hasn't been discovered, it sends up an assertion erro
 
 
 #+END_SRC
+** TODO Barrier Rooms
+** TODO Ending Conditions
+** TODO Special Rooms
+*** TODO Mystic Elevator
+*** TODO Coal Chute
+*** TODO Gallery
+*** TODO Vault
+*** TODO Collapsed Room
 
 ** Discovering Rooms
 Should a player move into a room that hasn't been discovered yet, that player uncovers a new room.
@@ -475,282 +483,344 @@ If the newly discoved room has an event in it, the player must stop moving and a
 #+END_SRC
 
 ** List of Rooms
-#+name: List_of_Rooms
-#+BEGIN_SRC python
-  List_of_Rooms = [
-      Room(
-          "Wine Cellar",
-          (True,False,True,False),
-          (-1),
-          #Item
-          ),
-      Room(
-          "Junk Room",
-          (True,True,True,True),
-          (-1,0,1),
-          #Omen,
-          #Exit Condition
-          ),
-      Room(
-          "Organ Room",
-          (False,False,True,True),
-          (-1,0,1),
-          #Event
-          ),
-      Room(
-          "Storeroom",
-          (True,False,False,False),
-          (-1,1)
-          #Item
-          ),
-      Room(
-          "Creaky Hallway",
-          (True,True,True,True),
-          (-1,0,1),
-          #None
-          ),
-      Room(
-          "Dusty Hallway",
-          (True,True,True,True),
-          (-1,0,1),
-          #None
-          ),
-      Room(
-          "Furnace Room",
-          (True,False,True,True),
-          (-1),
-          #Omen,
-          #Ending Condition
-          ),
-      Room(
-          "Stairs from Basement",
-          (False,False,True,False),
-          (-1),
-          #None,
-          #Biconnects to Foyer
-          ),
-      Room(
-          "Operating Laboratory",
-          (False,True,True,False),
-          (-1,1),
-          #Event
-          ),
-      Room(
-          "Pentagram Chamber",
-          (False,True,False,False),
-          (-1),
-          #Omen,
-          #Ending Condition
-          ),
-      Room(
-          "Attic",
-          (False,False,True,False),
-          (1),
-          #Event,
-          #Exit Condition
-          ),
-      Room(
-          "Chapel"
-          (True,False,False,False),
-          (0,1),
-          #Event,
-          #Ending Condition
-          ),
-      Room(
-          "Research Laboratory",
-          (True,False,True,False),
-          (-1,1),
-          #Event
-          ),
-      Room(
-          "Mystic Elevator",
-          (True,False,False,False),
-          (-1,0,1),
-          #None,
-          #Mystic Elevator
-          ),
-      Room(
-          "Vault",
-          (True,False,False,False),
-          (-1,1),
-          #Event,
-          #Vault
-          ),
-      Room(
-          "Gardens",
-          (True,False,True,False),
-          (0),
-          #Event,
-          ),
-      Room(
-          "Graveyard",
-          (False,False,True,False),
-          (0),
-          #Event,
-          #Exiting Condition
-          ),
-      Room(
-          "Patio",
-          (True,False,True,True),
-          (0),
-          #Event
-          ),
-      Room(
-          "Servants' Quarters",
-          (True,True,True,True),
-          (-1,1),
-          #Omen
-          ),
-      Room(
-          "Catacombs",
-          (True,False,True,False),
-          (-1),
-          #Omen
-          #Moving Condition
-          ),
-      Room(
-          "Ballroom",
-          (True,True,True,True),
-          (0),
-          #Event
-          ),
-      Room(
-          "Gymnasium",
-          (False,True,True,False),
-          (-1,1),
-          #Omen,
-          #Ending Condition
-          ),
-      Room(
-          "Tower",
-          (False,True,False,True),
-          (1),
-          #Event,
-          #Moving Condition
-          ),
-      Room(
-          "Larder",
-          (True,False,True,False),
-          (-1),
-          #Item
-          #Ending Condition
-          ),
-      Room(
-          "Bloody Room",
-          (True,True,True,True),
-          (0,1),
-          #Item
-          ),
-      Room(
-          "Dining Room",
-          (True,True,False,False),
-          (0),
-          #Omen
-          )
-      Room(
-          "Master Bedroom",
-          (True,False,False,True),
-          (1),
-          #Omen
-          ),
-      Room(
-          "Conservatory",
-          (True,False,False,False),
-          (0,1),
-          #Event
-          ),
-      Room(
-          "Collapsed Room",
-          (True,True,True,True),
-          (0,1),
-          #None,
-          #Collapsed Room
-          ),
-      Room(
-          "Bedroom",
-          (False,True,False,True),
-          (1),
-          #Event
-          ),
-      Room(
-          "Coal Chute",
-          (True,False,False,False),
-          (0),
-          #None,
-          #Coal Chute
-          ),
-      Room(
-          "Game Room",
-          (True,True,True,False),
-          (-1,0,1),
-          #Event
-          ),
-      Room(
-          "Library",
-          (False,False,True,True),
-          (0,1),
-          #Event,
-          #Ending Condition
-          ),
-      Room(
-          "Charred Room",
-          (True,True,True,True),
-          (0,1),
-          #Omen
-          ),
-      Room(
-          "Abandoned Room",
-          (True,True,True,True),
-          (-1,0),
-          #Omen
-          ),
-      Room(
-          "Balcony",
-          (True,False,True,False),
-          (1),
-          #Omen,
-          ),
-      Room(
-          "Statuary Corridor",
-          (True,False,True,False),
-          (-1,0,1),
-          #Event
-          ),
-      Room(
-          "Underground Lake",
-          (True,True,False,False),
-          (-1),
-          #Event
-          ),
-      Room(
-          "Kitchen",
-          (True,True,False,False),
-          (-1,0),
-          #Omen
-          ),
-      Room(
-          "Chasm",
-          (False,True,False,True),
-          (-1),
-          #None
-          #Moving Condition
-          ),
-      Room(
-          "Crypt",
-          (True,False,False,False),
-          (-1),
-          #Event
-          #Ending Condition
-          ),
-      Room(
-          "Gallery",
-          (True,False,True,False),
-          (1),
-          #Omen,
-          #Gallery
-          )
-      ]
-#+END_SRC
+:PROPERTIES:
+:COLUMNS: %NAME %SHAPE %FLOORS
+:END:
+ #+Begin: columnview :skip-empty-rows t
+ | NAME        | SHAPE                   | FLOORS    |
+ |-------------+-------------------------+-----------|
+ | Wine Cellar | (True,False,True,False) | (-1)      |
+ | Junk Room   | (True,True,True,True),  | (-1,0,1), |
+ #+End:
+*** DONE Wine Cellar
+    :PROPERTIES:
+    :NAME:     Wine Cellar
+    :SHAPE:    (True,False,True,False)
+    :FLOORS:   (-1)
+    :END:
+*** DONE Junk Room
+:PROPERTIES:
+:NAME:     Junk Room
+:SHAPE:    (True,True,True,True),
+:FLOORS:   (-1,0,1),
+:END:
+*** TODO Organ Room
+*** TODO Storeroom
+*** TODO Creeky Hallway
+*** TODO Dusty Hallway
+*** TODO Furnace Room
+*** TODO Stairs from the Basement
+*** TODO Operating Laboratory
+*** TODO Pentagram Chamber
+*** TODO Attic
+*** TODO Chapel
+*** TODO Research Laboratory
+*** TODO Mystic Elevator
+*** TODO Vault
+*** TODO Gardens
+*** TODO Graveyard
+*** TODO Patio
+*** TODO Servants' Quarters
+*** TODO Catacombs
+*** TODO Ballroom
+*** TODO Gymnasium
+*** TODO Tower
+*** TODO Larder
+*** TODO Bloody Room
+*** TODO Dining Room
+*** TODO Master Bedroom
+*** TODO Conservatory
+*** TODO Collapsed Room
+*** TODO Bedroom
+*** TODO Coal Chute
+*** TODO Game Room
+*** TODO Library
+*** TODO Charred Room
+*** TODO Abandoned Room
+*** TODO Balcony
+*** TODO Statuary Corridor
+*** TODO Underground Lake
+*** TODO Kitchen
+*** TODO Chasm
+*** TODO Crypt
+*** TODO Gallery
+** Room List Python 
+ #+name: List_of_Rooms
+ #+BEGIN_SRC python
+   List_of_Rooms = [
+       Room(
+           "Wine Cellar",
+           (True,False,True,False),
+           (-1),
+           #Item
+           ),
+       Room(
+           "Junk Room",
+           (True,True,True,True),
+           (-1,0,1),
+           #Omen,
+           #Exit Condition
+           ),
+       Room(
+           "Organ Room",
+           (False,False,True,True),
+           (-1,0,1),
+           #Event
+           ),
+       Room(
+           "Storeroom",
+           (True,False,False,False),
+           (-1,1)
+           #Item
+           ),
+       Room(
+           "Creaky Hallway",
+           (True,True,True,True),
+           (-1,0,1),
+           #None
+           ),
+       Room(
+           "Dusty Hallway",
+           (True,True,True,True),
+           (-1,0,1),
+           #None
+           ),
+       Room(
+           "Furnace Room",
+           (True,False,True,True),
+           (-1),
+           #Omen,
+           #Ending Condition
+           ),
+       Room(
+           "Stairs from Basement",
+           (False,False,True,False),
+           (-1),
+           #None,
+           #Biconnects to Foyer
+           ),
+       Room(
+           "Operating Laboratory",
+           (False,True,True,False),
+           (-1,1),
+           #Event
+           ),
+       Room(
+           "Pentagram Chamber",
+           (False,True,False,False),
+           (-1),
+           #Omen,
+           #Ending Condition
+           ),
+       Room(
+           "Attic",
+           (False,False,True,False),
+           (1),
+           #Event,
+           #Exit Condition
+           ),
+       Room(
+           "Chapel"
+           (True,False,False,False),
+           (0,1),
+           #Event,
+           #Ending Condition
+           ),
+       Room(
+           "Research Laboratory",
+           (True,False,True,False),
+           (-1,1),
+           #Event
+           ),
+       Room(
+           "Mystic Elevator",
+           (True,False,False,False),
+           (-1,0,1),
+           #None,
+           #Mystic Elevator
+           ),
+       Room(
+           "Vault",
+           (True,False,False,False),
+           (-1,1),
+           #Event,
+           #Vault
+           ),
+       Room(
+           "Gardens",
+           (True,False,True,False),
+           (0),
+           #Event,
+           ),
+       Room(
+           "Graveyard",
+           (False,False,True,False),
+           (0),
+           #Event,
+           #Exiting Condition
+           ),
+       Room(
+           "Patio",
+           (True,False,True,True),
+           (0),
+           #Event
+           ),
+       Room(
+           "Servants' Quarters",
+           (True,True,True,True),
+           (-1,1),
+           #Omen
+           ),
+       Room(
+           "Catacombs",
+           (True,False,True,False),
+           (-1),
+           #Omen
+           #Moving Condition
+           ),
+       Room(
+           "Ballroom",
+           (True,True,True,True),
+           (0),
+           #Event
+           ),
+       Room(
+           "Gymnasium",
+           (False,True,True,False),
+           (-1,1),
+           #Omen,
+           #Ending Condition
+           ),
+       Room(
+           "Tower",
+           (False,True,False,True),
+           (1),
+           #Event,
+           #Moving Condition
+           ),
+       Room(
+           "Larder",
+           (True,False,True,False),
+           (-1),
+           #Item
+           #Ending Condition
+           ),
+       Room(
+           "Bloody Room",
+           (True,True,True,True),
+           (0,1),
+           #Item
+           ),
+       Room(
+           "Dining Room",
+           (True,True,False,False),
+           (0),
+           #Omen
+           )
+       Room(
+           "Master Bedroom",
+           (True,False,False,True),
+           (1),
+           #Omen
+           ),
+       Room(
+           "Conservatory",
+           (True,False,False,False),
+           (0,1),
+           #Event
+           ),
+       Room(
+           "Collapsed Room",
+           (True,True,True,True),
+           (0,1),
+           #None,
+           #Collapsed Room
+           ),
+       Room(
+           "Bedroom",
+           (False,True,False,True),
+           (1),
+           #Event
+           ),
+       Room(
+           "Coal Chute",
+           (True,False,False,False),
+           (0),
+           #None,
+           #Coal Chute
+           ),
+       Room(
+           "Game Room",
+           (True,True,True,False),
+           (-1,0,1),
+           #Event
+           ),
+       Room(
+           "Library",
+           (False,False,True,True),
+           (0,1),
+           #Event,
+           #Ending Condition
+           ),
+       Room(
+           "Charred Room",
+           (True,True,True,True),
+           (0,1),
+           #Omen
+           ),
+       Room(
+           "Abandoned Room",
+           (True,True,True,True),
+           (-1,0),
+           #Omen
+           ),
+       Room(
+           "Balcony",
+           (True,False,True,False),
+           (1),
+           #Omen,
+           ),
+       Room(
+           "Statuary Corridor",
+           (True,False,True,False),
+           (-1,0,1),
+           #Event
+           ),
+       Room(
+           "Underground Lake",
+           (True,True,False,False),
+           (-1),
+           #Event
+           ),
+       Room(
+           "Kitchen",
+           (True,True,False,False),
+           (-1,0),
+           #Omen
+           ),
+       Room(
+           "Chasm",
+           (False,True,False,True),
+           (-1),
+           #None
+           #Moving Condition
+           ),
+       Room(
+           "Crypt",
+           (True,False,False,False),
+           (-1),
+           #Event
+           #Ending Condition
+           ),
+       Room(
+           "Gallery",
+           (True,False,True,False),
+           (1),
+           #Omen,
+           #Gallery
+           )
+       ]
+ #+END_SRC
 
 ** Tests
 #+name: Map_Tests
@@ -894,7 +964,13 @@ If the newly discoved room has an event in it, the player must stop moving and a
 ** TODO Omens
 
 * TODO Haunts
-* Dice and other Utilities 
+:PROPERTIES:
+:COLUMNS: %NAME %OMEN %ROOM
+:END: 
+#+Begin: columnview :skip-empty-rows t
+| NAME | OMEN | ROOM |
+|------+------+------|
+#+End: 
 * Engine
 We start putting things together here in the engine
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes  :shebang #!/usr/bin/env python3

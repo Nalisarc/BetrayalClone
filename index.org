@@ -9,7 +9,7 @@ any language with a bit of work.
 You can build your own copy of the game by opening index.org in emacs, and running entering C-c C-v C-t.
 
 * Licence
-* Characters
+* TODO Characters
 ** Character Object
 #+name: Character_Object
 #+BEGIN_SRC python :noweb yes :tangle traitor/character.py 
@@ -457,7 +457,13 @@ In the event that the room hasn't been discovered, it sends up an assertion erro
 
 #+END_SRC
 ** TODO Barrier Rooms
+Barrier rooms are a subtype of room, you can enter from one side but inorder to cross it you mut pass some sort of challenge.
+For the most part these are simply a roll, however if you fail the challenge you stop moving for the turn.
+The traitor and monsters are immune to these challenges unless noted.
 ** TODO Ending Conditions
+If you end your turn in these rooms something happeneds. This can be negative or positive.
+However negative effects tend to happen anytime you end your turn in that room; whereas positive tend to only
+happen once per player per game.
 ** TODO Special Rooms
 *** TODO Mystic Elevator
 *** TODO Coal Chute
@@ -484,17 +490,16 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
 ** List of Rooms
 :PROPERTIES:
-:COLUMNS: %NAME %SHAPE %FLOORS
+:COLUMNS: %ITEM %SHAPE %FLOORS
 :END:
  #+Begin: columnview :skip-empty-rows t
- | NAME        | SHAPE                   | FLOORS    |
+ | ITEM        | SHAPE                   | FLOORS    |
  |-------------+-------------------------+-----------|
  | Wine Cellar | (True,False,True,False) | (-1)      |
  | Junk Room   | (True,True,True,True),  | (-1,0,1), |
  #+End:
 *** DONE Wine Cellar
     :PROPERTIES:
-    :NAME:     Wine Cellar
     :SHAPE:    (True,False,True,False)
     :FLOORS:   (-1)
     :END:
@@ -958,20 +963,16 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
 #+END_SRC
 
-* TODO Cards
-** TODO Items
-** TODO Events
-** TODO Omens
+* TODO Items
+* TODO Events
+* TODO Omens
 
 * TODO Haunts
+** Haunt Table
 :PROPERTIES:
-:COLUMNS: %NAME %OMEN %ROOM
+:COLUMNS: %ITEM %OMEN %ROOM
 :END: 
-#+Begin: columnview :skip-empty-rows t
-| NAME | OMEN | ROOM |
-|------+------+------|
-#+End: 
-* Engine
+* TODO Engine
 We start putting things together here in the engine
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes  :shebang #!/usr/bin/env python3
   import sys

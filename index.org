@@ -465,6 +465,8 @@ If you end your turn in these rooms something happeneds. This can be negative or
 However negative effects tend to happen anytime you end your turn in that room; whereas positive tend to only
 happen once per player per game.
 ** TODO Special Rooms
+These rooms all have something special about them by default that is difficult to catagories, or would lead to unnessisarly
+overly complicated pieces. Instead these rooms all get clumped into the catagory of "special".
 *** TODO Mystic Elevator
 *** TODO Coal Chute
 *** TODO Gallery
@@ -488,68 +490,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
 #+END_SRC
 
-** List of Rooms
-:PROPERTIES:
-:COLUMNS: %ITEM %SHAPE %FLOORS
-:END:
- #+Begin: columnview :skip-empty-rows t
- | ITEM        | SHAPE                   | FLOORS    |
- |-------------+-------------------------+-----------|
- | Wine Cellar | (True,False,True,False) | (-1)      |
- | Junk Room   | (True,True,True,True),  | (-1,0,1), |
- #+End:
-*** DONE Wine Cellar
-    :PROPERTIES:
-    :SHAPE:    (True,False,True,False)
-    :FLOORS:   (-1)
-    :END:
-*** DONE Junk Room
-:PROPERTIES:
-:NAME:     Junk Room
-:SHAPE:    (True,True,True,True),
-:FLOORS:   (-1,0,1),
-:END:
-*** TODO Organ Room
-*** TODO Storeroom
-*** TODO Creeky Hallway
-*** TODO Dusty Hallway
-*** TODO Furnace Room
-*** TODO Stairs from the Basement
-*** TODO Operating Laboratory
-*** TODO Pentagram Chamber
-*** TODO Attic
-*** TODO Chapel
-*** TODO Research Laboratory
-*** TODO Mystic Elevator
-*** TODO Vault
-*** TODO Gardens
-*** TODO Graveyard
-*** TODO Patio
-*** TODO Servants' Quarters
-*** TODO Catacombs
-*** TODO Ballroom
-*** TODO Gymnasium
-*** TODO Tower
-*** TODO Larder
-*** TODO Bloody Room
-*** TODO Dining Room
-*** TODO Master Bedroom
-*** TODO Conservatory
-*** TODO Collapsed Room
-*** TODO Bedroom
-*** TODO Coal Chute
-*** TODO Game Room
-*** TODO Library
-*** TODO Charred Room
-*** TODO Abandoned Room
-*** TODO Balcony
-*** TODO Statuary Corridor
-*** TODO Underground Lake
-*** TODO Kitchen
-*** TODO Chasm
-*** TODO Crypt
-*** TODO Gallery
-** Room List Python 
+** Python Room List
  #+name: List_of_Rooms
  #+BEGIN_SRC python
    List_of_Rooms = [
@@ -966,7 +907,6 @@ If the newly discoved room has an event in it, the player must stop moving and a
 * TODO Items
 * TODO Events
 * TODO Omens
-
 * TODO Haunts
 ** Haunt Table
 :PROPERTIES:

@@ -194,91 +194,53 @@ A list of the built in characters.
 #+END_SRC
 
 * TODO Rooms
-** Map
-The map is a 3 dimensional space, with various points representing the rooms.
-These points are always intigers, that can range from negative to positive.
-Each point is represented by a 3 digit vector (x,y,z).
-In normal operations Z should only ever range from -1 to 1. However I will not restrict this implicetly.
-Movement across the map is in what is called Taxi-Cab geometry. You cannot move diagonally under normal operations.
-
-Players can move any of the following directions:
-Cardinal Directions:
- * North
- * South
- * East
- * West
-
-Special Directions:
- * Up
- * Down
- * In
- * Out
-
-East and West increase and decrease the x axis by 1
-North and South increase and decrease the y axis by 1.
-
-In and Out are special, and can be thought of teleporting the player or monster to whatever it is connected to.
-In and Out only appear in a few cases, such as secret doors.
-Up and Down could in theory increase and decrease the z axis. And in somecases it might. However the upperlanding and basement landing
-are located at (0,0,1) and (0,0,-1) respectively. And rooms like the collapsed room, and the coal shute could be located anywhere on 
-the map. However if the basement had not been explored yet, it could lead to situations where the players become trapped and never able to
-return upstairs. To prevent this, up and down will also be treated like in and out. 
-
-If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
-If there are no more rooms to discover but there are still open doors, those doors become disabled.
-
-
-#+name: Map
-#+BEGIN_SRC python :noweb yes  :tangle traitor/house.py 
-  import itertools
-  import random
-  <<Room_Object>>
-  <<map_discover>>
-  MAP = {}
-
-  MAP[(0,0,0)]= Room(
-      "Entrance Hall",
-      (True,True,False,True)
-  )
-
-  MAP[(0,1,0)] = Room(
-      "Foyer",
-      #Blank means all doors enabled
-  )
-
-
-  MAP[(0,2,0)] =  Room(
-      "Grand Staircase",
-      (False,False,True,False)
-  )
-
-  MAP[(0,0,1)] = Room(
-      "Upper Landing",
-
-  )
-
-  MAP[(0,0,-1)] = Room(
-      "Basement Landing",
-
-  )
-
-
-  for room in MAP:
-      MAP[room].set_coordnate(room)
-      MAP[room].set_edges()
-
-
-  MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
-  MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
-  MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
-
-
-
-
-
-#+END_SRC
-
-#+RESULTS: Map
+#+BEGIN: columnview :skip-empty-rows t :id 909d5b16-7f7f-44a4-94dd-725d716badb8
+#+name: room-table
+| ITEM                     | SHAPE                      | FLOORS   |
+|--------------------------+----------------------------+----------|
+| Wine Cellar              | (True,False,True,False)    | (-1)     |
+| Junk Room                | (True,True,True,True)      | (-1,0,1) |
+| Organ Room               | (False, False, True, True) | (-1,0,1) |
+| Storeroom                | (True,False,False,False)   | (-1,1)   |
+| Creeky Hallway           | (True,True,True,True)      | (-1,0,1) |
+| Dusty Hallway            | (True,True,True,True)      | (-1,0,1) |
+| Furnace Room             | (True,False,True,True)     | (-1)     |
+| Stairs from the Basement | (False,False,True,False)   | (-1)     |
+| Operating Laboratory     | (False,True,True,False)    | (-1,1)   |
+| Pentagram Chamber        | (False,True,False,False)   | (-1)     |
+| Attic                    | (False,False,True,False)   | (1)      |
+| Chapel                   | (True,False,False,False)   | (0,1)    |
+| Research Laboratory      | (True,False,True,False)    | (-1,1)   |
+| Mystic Elevator          | (True,False,False,False)   | (-1,0,1) |
+| Vault                    | (True,False,False,False)   | (-1,1)   |
+| Gardens                  | (True,False,True,False)    | (0)      |
+| Graveyard                | (False,False,True,False)   | (0)      |
+| Patio                    | (True,False,True,True)     | (0)      |
+| Servants' Quarters       | (True,True,True,True)      | (-1,1)   |
+| Catacombs                | (True,False,True,False)    | (-1)     |
+| Ballroom                 | (True,True,True,True)      | (0)      |
+| Gymnasium                | (False,True,True,False)    | (-1,1)   |
+| Tower                    | (False,True,False,True)    | (1)      |
+| Larder                   | (True,False,True,False)    | (-1)     |
+| Bloody Room              | (True,True,True,True)      | (0,1)    |
+| Dining Room              | (True,True,False,False)    | (0)      |
+| Master Bedroom           | (True,False,False,True)    | (1)      |
+| Conservatory             | (True,False,False,False)   | (0,1)    |
+| Collapsed Room           | (True,True,True,True)      | (0,1)    |
+| Bedroom                  | (False,True,False,True)    | (1)      |
+| Coal Chute               | (True,False,False,False)   | (1)      |
+| Game Room                | (True,True,True,False)     | (-1,0,1) |
+| Library                  | (False,False,True,True)    | (0,1)    |
+| Charred Room             | (True,True,True,True)      | (0,1)    |
+| Abandoned Room           | (True,True,True,True)      | (-1,0)   |
+| Balcony                  | (True,False,True,False)    | (1)      |
+| Statuary Corridor        | (True,False,True,False)    | (-1,0,1) |
+| Underground Lake         | (True,True,False,False)    | (-1)     |
+| Kitchen                  | (True,True,False,False)    | (-1,0)   |
+| Chasm                    | (False,True,False,True)    | (-1)     |
+| Crypt                    | (True,False,False,False)   | (-1)     |
+| Gallery                  | (True,False,True,False)    | (1)      |
+#+END:
 
 ** Room Object
 The room object is the representation of a room tile, the room object should be able to be easily represented by a table.
@@ -369,7 +331,22 @@ A room contains a few bits of information:
 
 
  #+END_SRC
-
+** TODO Barrier Rooms
+Barrier rooms are a subtype of room, you can enter from one side but inorder to cross it you mut pass some sort of challenge.
+For the most part these are simply a roll, however if you fail the challenge you stop moving for the turn.
+The traitor and monsters are immune to these challenges unless noted.
+** TODO Ending Conditions
+If you end your turn in these rooms something happeneds. This can be negative or positive.
+However negative effects tend to happen anytime you end your turn in that room; whereas positive tend to only
+happen once per player per game.
+** TODO Special Rooms
+These rooms all have something special about them by default that is difficult to catagories, or would lead to unnessisarly
+overly complicated pieces. Instead these rooms all get clumped into the catagory of "special".
+*** TODO Mystic Elevator
+*** TODO Coal Chute
+*** TODO Gallery
+*** TODO Vault
+*** TODO Collapsed Room
 ** Connecting Rooms
 #+name: Connect_Rooms
 #+BEGIN_SRC python 
@@ -411,7 +388,6 @@ A room contains a few bits of information:
 
 
 #+END_SRC
-
 ** Check Connection
 #+name: Connection_Test_Methods
 #+BEGIN_SRC python
@@ -437,6 +413,102 @@ A room contains a few bits of information:
 
       return False
 #+END_SRC
+* TODO Map
+The map is a 3 dimensional space, with various points representing the rooms.
+These points are always intigers, that can range from negative to positive.
+Each point is represented by a 3 digit vector (x,y,z).
+In normal operations Z should only ever range from -1 to 1. However I will not restrict this implicetly.
+Movement across the map is in what is called Taxi-Cab geometry. You cannot move diagonally under normal operations.
+
+Players can move any of the following directions:
+Cardinal Directions:
+ * North
+ * South
+ * East
+ * West
+
+Special Directions:
+ * Up
+ * Down
+ * In
+ * Out
+
+East and West increase and decrease the x axis by 1
+North and South increase and decrease the y axis by 1.
+
+In and Out are special, and can be thought of teleporting the player or monster to whatever it is connected to.
+In and Out only appear in a few cases, such as secret doors.
+Up and Down could in theory increase and decrease the z axis. And in somecases it might. However the upperlanding and basement landing
+are located at (0,0,1) and (0,0,-1) respectively. And rooms like the collapsed room, and the coal shute could be located anywhere on 
+the map. However if the basement had not been explored yet, it could lead to situations where the players become trapped and never able to
+return upstairs. To prevent this, up and down will also be treated like in and out. 
+
+If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
+If there are no more rooms to discover but there are still open doors, those doors become disabled.
+
+
+#+name: Map
+#+BEGIN_SRC python :noweb yes  :tangle traitor/house.py :var room_table=room-table
+  import itertools
+  import random
+  <<Room_Object>>
+
+  ROOM_LIST = []
+
+  for room in room_table:
+      ROOM_LIST.append(Room(
+          room[0],
+          eval(room[1]),
+          eval(room[2]),)
+      )
+
+
+  <<map_discover>>
+  MAP = {}
+
+  MAP[(0,0,0)]= Room(
+      "Entrance Hall",
+      (True,True,False,True)
+  )
+
+  MAP[(0,1,0)] = Room(
+      "Foyer",
+      #Blank means all doors enabled
+  )
+
+
+  MAP[(0,2,0)] =  Room(
+      "Grand Staircase",
+      (False,False,True,False)
+  )
+
+  MAP[(0,0,1)] = Room(
+      "Upper Landing",
+
+  )
+
+  MAP[(0,0,-1)] = Room(
+      "Basement Landing",
+
+  )
+
+
+  for room in MAP:
+      MAP[room].set_coordnate(room)
+      MAP[room].set_edges()
+
+
+  MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
+  MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
+  MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
+
+
+
+
+
+#+END_SRC
+
+#+RESULTS: Map
 
 ** Moving Between Rooms
 Room objects have a move method, this takes a direction from their edges table and returns the coordnates.
@@ -456,22 +528,6 @@ In the event that the room hasn't been discovered, it sends up an assertion erro
 
 
 #+END_SRC
-** TODO Barrier Rooms
-Barrier rooms are a subtype of room, you can enter from one side but inorder to cross it you mut pass some sort of challenge.
-For the most part these are simply a roll, however if you fail the challenge you stop moving for the turn.
-The traitor and monsters are immune to these challenges unless noted.
-** TODO Ending Conditions
-If you end your turn in these rooms something happeneds. This can be negative or positive.
-However negative effects tend to happen anytime you end your turn in that room; whereas positive tend to only
-happen once per player per game.
-** TODO Special Rooms
-These rooms all have something special about them by default that is difficult to catagories, or would lead to unnessisarly
-overly complicated pieces. Instead these rooms all get clumped into the catagory of "special".
-*** TODO Mystic Elevator
-*** TODO Coal Chute
-*** TODO Gallery
-*** TODO Vault
-*** TODO Collapsed Room
 
 ** Discovering Rooms
 Should a player move into a room that hasn't been discovered yet, that player uncovers a new room.
@@ -1001,3 +1057,5 @@ We start putting things together here in the engine
       me = player(house)
       me.repl()
 #+END_SRC
+
+

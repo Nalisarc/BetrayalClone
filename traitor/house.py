@@ -59,6 +59,8 @@ class Room(object):
             edge['direction'] = direction_wheel.__next__()
             continue
 
+
+
         return None
 
     def set_coordnate(self,coordnate):
@@ -68,6 +70,19 @@ class Room(object):
     def get_coordnate(self):
         return (self.x,self.y,self.z)
 
+    def set_connections(self):
+        for edge in self.edges:
+            x,y,z = self.get_coordnate()
+            if edge["direction"] == 'north':
+                y += 1
+            if edge["direction"] == 'south':
+                y -= 1
+            if edge["direction"] == 'east':
+                x += 1
+            if edge["direction"] == 'west':
+                x -= 1
+            edge["connection"] = (x,y,z)
+        return None
     
     def connect(self, direction, room):
     
@@ -127,13 +142,13 @@ class Room(object):
     
         return False
     def move(self, direction):
-    
         for edge in self.edges:
             if edge["direction"] == direction:
                 assert edge["enabled"] != False
                 return edge["connection"]
     
-    
+    def teleport(self,coordnate):
+        return coordnate
     
     
 
@@ -142,8 +157,16 @@ class Room(object):
 #internal functions
 
 def spawn_room(coordnate, room):
-    MAP[coordnate] = room
-    return None
+    try:
+        assert coordnate not in MAP
+        MAP[coordnate] = room
+        return None
+
+    except AssertionError:
+        print("Error, coordnate is already in use by: {}".format(
+            MAP[coordnate].name)
+	      )
+        raise KeyError
 
 
 
@@ -183,12 +206,9 @@ MAP[(0,0,-1)] = Room(
 
 )
 
-
 for room in MAP:
     MAP[room].set_coordnate(room)
     MAP[room].set_edges()
+    MAP[room].set_connections()
 
-
-MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
-MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
 MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])

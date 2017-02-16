@@ -1,16 +1,35 @@
 #+Title: Traitor
 #+author: Daniel Alexander Smith
 #+email: nalisarc@gmail.com
-* TODO Readme
+* TODO Readme 
 Traitor, is a personal project to transform the board game Betrayal on the House on the Hill by Bruce Glasses
 into a computer program. I started writing this for the #100daysofcode challenge. While the main program is written
 in python. Due to the nature of the style of document that this is written in. You could potentially convert the code into 
 any language with a bit of work.
 You can build your own copy of the game by opening index.org in emacs, and running entering C-c C-v C-t.
 * TODO Licence
-  I need a licence that lets people do whatever they want, as long as they know that I don't offer any warrenty on this software
-or anything it may do to their computers. Also that they can't say they wrote it. But modification is fine, and they can distribute those
-modifications.
+#+BEGIN_SRC text :tangle LICENCE.MD 
+  Copyright (c) 2017 Daniel Alexander Smith
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+#+END_SRC
+
 * TODO Characters
 ** Character Object
 #+name: Character_Object
@@ -276,8 +295,6 @@ A list of the built in characters.
  If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
  If there are no more rooms to discover but there are still open doors, those doors become disabled.
 
-
- #+name: Map
  #+BEGIN_SRC python :noweb yes  :tangle traitor/house.py :var room_table=room-table
    #Imports
    import itertools
@@ -290,57 +307,60 @@ A list of the built in characters.
    #internal functions
    <<map_discover>>
 
-
-   for room in room_table:
-       ROOM_LIST.append(Room(
-           room[0],
-           eval(room[1]),
-           eval(room[2]),)
-       )
-
-   MAP[(0,0,0)]= Room(
-       "Entrance Hall",
-       (True,True,False,True)
-   )
-
-   MAP[(0,1,0)] = Room(
-       "Foyer",
-       #Blank means all doors enabled
-   )
-
-
-   MAP[(0,2,0)] =  Room(
-       "Grand Staircase",
-       (False,False,True,False)
-   )
-
-   MAP[(0,0,1)] = Room(
-       "Upper Landing",
-
-   )
-
-   MAP[(0,0,-1)] = Room(
-       "Basement Landing",
-
-   )
-
-
-   for room in MAP:
-       MAP[room].set_coordnate(room)
-       MAP[room].set_edges()
-
-
-   MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
-   MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
-   MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
-
+   <<map_setup>>
 
 
 
 
  #+END_SRC
 
- #+RESULTS: Map
+** Set up map
+#+name: map_setup
+#+BEGIN_SRC python
+
+  for room in room_table:
+      ROOM_LIST.append(Room(
+          room[0],
+          eval(room[1]),
+          eval(room[2]),)
+      )
+
+  MAP[(0,0,0)]= Room(
+      "Entrance Hall",
+      (True,True,False,True)
+  )
+
+  MAP[(0,1,0)] = Room(
+      "Foyer",
+      #Blank means all doors enabled
+  )
+
+
+  MAP[(0,2,0)] =  Room(
+      "Grand Staircase",
+      (False,False,True,False)
+  )
+
+  MAP[(0,0,1)] = Room(
+      "Upper Landing",
+
+  )
+
+  MAP[(0,0,-1)] = Room(
+      "Basement Landing",
+
+  )
+
+  for room in MAP:
+      MAP[room].set_coordnate(room)
+      MAP[room].set_edges()
+      MAP[room].set_connections()
+
+  MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
+
+
+#+END_SRC
+
 ** Room Object
 The room object is the representation of a room tile, the room object should be able to be easily represented by a table.
 A room contains a few bits of information:
@@ -414,6 +434,8 @@ A room contains a few bits of information:
                edge['direction'] = direction_wheel.__next__()
                continue
 
+        
+
            return None
 
        def set_coordnate(self,coordnate):
@@ -434,6 +456,11 @@ A room contains a few bits of information:
 Barrier rooms are a subtype of room, you can enter from one side but inorder to cross it you mut pass some sort of challenge.
 For the most part these are simply a roll, however if you fail the challenge you stop moving for the turn.
 The traitor and monsters are immune to these challenges unless noted.
+#+name: barrier_room
+#+BEGIN_SRC python
+
+#+END_SRC
+
 ** TODO Ending Conditions
 If you end your turn in these rooms something happeneds. This can be negative or positive.
 However negative effects tend to happen anytime you end your turn in that room; whereas positive tend to only
@@ -449,7 +476,20 @@ overly complicated pieces. Instead these rooms all get clumped into the catagory
 ** Connecting Rooms
 #+name: Connect_Rooms
 #+BEGIN_SRC python 
-
+  def set_connections(self):
+      for edge in self.edges:
+          x,y,z = self.get_coordnate()
+          if edge["direction"] == 'north':
+              y += 1
+          if edge["direction"] == 'south':
+              y -= 1
+          if edge["direction"] == 'east':
+              x += 1
+          if edge["direction"] == 'west':
+              x -= 1
+          edge["connection"] = (x,y,z)
+      return None
+            
   def connect(self, direction, room):
 
       if direction in self.special_directions:
@@ -540,291 +580,21 @@ If the newly discoved room has an event in it, the player must stop moving and a
 #+BEGIN_SRC python
 
   def spawn_room(coordnate, room):
-      MAP[coordnate] = room
-      return None
+      try:
+          assert coordnate not in MAP
+          MAP[coordnate] = room
+          return None
+
+      except AssertionError:
+          print("Error, coordnate is already in use by: {}".format(
+              MAP[coordnate].name)
+		)
+          raise KeyError
 
 
 
 
 #+END_SRC
-
-** Python Room List
- #+name: List_of_Rooms
- #+BEGIN_SRC python
-   List_of_Rooms = [
-       Room(
-           "Wine Cellar",
-           (True,False,True,False),
-           (-1),
-           #Item
-           ),
-       Room(
-           "Junk Room",
-           (True,True,True,True),
-           (-1,0,1),
-           #Omen,
-           #Exit Condition
-           ),
-       Room(
-           "Organ Room",
-           (False,False,True,True),
-           (-1,0,1),
-           #Event
-           ),
-       Room(
-           "Storeroom",
-           (True,False,False,False),
-           (-1,1)
-           #Item
-           ),
-       Room(
-           "Creaky Hallway",
-           (True,True,True,True),
-           (-1,0,1),
-           #None
-           ),
-       Room(
-           "Dusty Hallway",
-           (True,True,True,True),
-           (-1,0,1),
-           #None
-           ),
-       Room(
-           "Furnace Room",
-           (True,False,True,True),
-           (-1),
-           #Omen,
-           #Ending Condition
-           ),
-       Room(
-           "Stairs from Basement",
-           (False,False,True,False),
-           (-1),
-           #None,
-           #Biconnects to Foyer
-           ),
-       Room(
-           "Operating Laboratory",
-           (False,True,True,False),
-           (-1,1),
-           #Event
-           ),
-       Room(
-           "Pentagram Chamber",
-           (False,True,False,False),
-           (-1),
-           #Omen,
-           #Ending Condition
-           ),
-       Room(
-           "Attic",
-           (False,False,True,False),
-           (1),
-           #Event,
-           #Exit Condition
-           ),
-       Room(
-           "Chapel"
-           (True,False,False,False),
-           (0,1),
-           #Event,
-           #Ending Condition
-           ),
-       Room(
-           "Research Laboratory",
-           (True,False,True,False),
-           (-1,1),
-           #Event
-           ),
-       Room(
-           "Mystic Elevator",
-           (True,False,False,False),
-           (-1,0,1),
-           #None,
-           #Mystic Elevator
-           ),
-       Room(
-           "Vault",
-           (True,False,False,False),
-           (-1,1),
-           #Event,
-           #Vault
-           ),
-       Room(
-           "Gardens",
-           (True,False,True,False),
-           (0),
-           #Event,
-           ),
-       Room(
-           "Graveyard",
-           (False,False,True,False),
-           (0),
-           #Event,
-           #Exiting Condition
-           ),
-       Room(
-           "Patio",
-           (True,False,True,True),
-           (0),
-           #Event
-           ),
-       Room(
-           "Servants' Quarters",
-           (True,True,True,True),
-           (-1,1),
-           #Omen
-           ),
-       Room(
-           "Catacombs",
-           (True,False,True,False),
-           (-1),
-           #Omen
-           #Moving Condition
-           ),
-       Room(
-           "Ballroom",
-           (True,True,True,True),
-           (0),
-           #Event
-           ),
-       Room(
-           "Gymnasium",
-           (False,True,True,False),
-           (-1,1),
-           #Omen,
-           #Ending Condition
-           ),
-       Room(
-           "Tower",
-           (False,True,False,True),
-           (1),
-           #Event,
-           #Moving Condition
-           ),
-       Room(
-           "Larder",
-           (True,False,True,False),
-           (-1),
-           #Item
-           #Ending Condition
-           ),
-       Room(
-           "Bloody Room",
-           (True,True,True,True),
-           (0,1),
-           #Item
-           ),
-       Room(
-           "Dining Room",
-           (True,True,False,False),
-           (0),
-           #Omen
-           )
-       Room(
-           "Master Bedroom",
-           (True,False,False,True),
-           (1),
-           #Omen
-           ),
-       Room(
-           "Conservatory",
-           (True,False,False,False),
-           (0,1),
-           #Event
-           ),
-       Room(
-           "Collapsed Room",
-           (True,True,True,True),
-           (0,1),
-           #None,
-           #Collapsed Room
-           ),
-       Room(
-           "Bedroom",
-           (False,True,False,True),
-           (1),
-           #Event
-           ),
-       Room(
-           "Coal Chute",
-           (True,False,False,False),
-           (0),
-           #None,
-           #Coal Chute
-           ),
-       Room(
-           "Game Room",
-           (True,True,True,False),
-           (-1,0,1),
-           #Event
-           ),
-       Room(
-           "Library",
-           (False,False,True,True),
-           (0,1),
-           #Event,
-           #Ending Condition
-           ),
-       Room(
-           "Charred Room",
-           (True,True,True,True),
-           (0,1),
-           #Omen
-           ),
-       Room(
-           "Abandoned Room",
-           (True,True,True,True),
-           (-1,0),
-           #Omen
-           ),
-       Room(
-           "Balcony",
-           (True,False,True,False),
-           (1),
-           #Omen,
-           ),
-       Room(
-           "Statuary Corridor",
-           (True,False,True,False),
-           (-1,0,1),
-           #Event
-           ),
-       Room(
-           "Underground Lake",
-           (True,True,False,False),
-           (-1),
-           #Event
-           ),
-       Room(
-           "Kitchen",
-           (True,True,False,False),
-           (-1,0),
-           #Omen
-           ),
-       Room(
-           "Chasm",
-           (False,True,False,True),
-           (-1),
-           #None
-           #Moving Condition
-           ),
-       Room(
-           "Crypt",
-           (True,False,False,False),
-           (-1),
-           #Event
-           #Ending Condition
-           ),
-       Room(
-           "Gallery",
-           (True,False,True,False),
-           (1),
-           #Omen,
-           #Gallery
-           )
-       ]
- #+END_SRC
 
 ** Tests
 #+name: Map_Tests
@@ -1061,3 +831,20 @@ We start putting things together here in the engine
 #+END_SRC
 
 
+* Dice
+The dice in tratior are a type of six sided dice that have the values: 0,1,2 printed twice.
+To represent this in the game, dice are a d3 with those values.
+The player will role a number of dice equal to the stat on that roll.
+For example: if you were to role a knowledge roll and your stat was 3, you would get back the sum of
+3 random numbers between 0-2. Therefore the highest you can get is 6.
+In the game, there are only 8 dice. I won't be capping that number explictly because you won't get above it in game.
+The maximum possible output is 2N and the minimum possible output is always 0
+#+name: dice_function
+#+BEGIN_SRC python
+  import random
+  def roll(N):
+      return sum([random.randint(0,2) for r in range(N)])
+
+
+#+END_SRC
+  

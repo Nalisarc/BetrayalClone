@@ -1,14 +1,16 @@
 #+Title: Traitor
 #+author: Daniel Alexander Smith
 #+email: nalisarc@gmail.com
-* Readme
+* TODO Readme
 Traitor, is a personal project to transform the board game Betrayal on the House on the Hill by Bruce Glasses
 into a computer program. I started writing this for the #100daysofcode challenge. While the main program is written
-in python. Due to the nature of the style of document that this is written in. You could potentially conver the code into 
+in python. Due to the nature of the style of document that this is written in. You could potentially convert the code into 
 any language with a bit of work.
 You can build your own copy of the game by opening index.org in emacs, and running entering C-c C-v C-t.
-
-* Licence
+* TODO Licence
+  I need a licence that lets people do whatever they want, as long as they know that I don't offer any warrenty on this software
+or anything it may do to their computers. Also that they can't say they wrote it. But modification is fine, and they can distribute those
+modifications.
 * TODO Characters
 ** Character Object
 #+name: Character_Object
@@ -241,7 +243,104 @@ A list of the built in characters.
 | Crypt                    | (True,False,False,False)   | (-1)     |
 | Gallery                  | (True,False,True,False)    | (1)      |
 #+END:
+** TODO Map
+ The map is a 3 dimensional space, with various points representing the rooms.
+ These points are always intigers, that can range from negative to positive.
+ Each point is represented by a 3 digit vector (x,y,z).
+ In normal operations Z should only ever range from -1 to 1. However I will not restrict this implicetly.
+ Movement across the map is in what is called Taxi-Cab geometry. You cannot move diagonally under normal operations.
 
+ Players can move any of the following directions:
+ Cardinal Directions:
+  * North
+  * South
+  * East
+  * West
+
+ Special Directions:
+  * Up
+  * Down
+  * In
+  * Out
+
+ East and West increase and decrease the x axis by 1
+ North and South increase and decrease the y axis by 1.
+
+ In and Out are special, and can be thought of teleporting the player or monster to whatever it is connected to.
+ In and Out only appear in a few cases, such as secret doors.
+ Up and Down could in theory increase and decrease the z axis. And in somecases it might. However the upperlanding and basement landing
+ are located at (0,0,1) and (0,0,-1) respectively. And rooms like the collapsed room, and the coal shute could be located anywhere on 
+ the map. However if the basement had not been explored yet, it could lead to situations where the players become trapped and never able to
+ return upstairs. To prevent this, up and down will also be treated like in and out. 
+
+ If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
+ If there are no more rooms to discover but there are still open doors, those doors become disabled.
+
+
+ #+name: Map
+ #+BEGIN_SRC python :noweb yes  :tangle traitor/house.py :var room_table=room-table
+   #Imports
+   import itertools
+   import random
+   #Constants
+   MAP = {}
+   ROOM_LIST = []
+   #Objects
+   <<Room_Object>>
+   #internal functions
+   <<map_discover>>
+
+
+   for room in room_table:
+       ROOM_LIST.append(Room(
+           room[0],
+           eval(room[1]),
+           eval(room[2]),)
+       )
+
+   MAP[(0,0,0)]= Room(
+       "Entrance Hall",
+       (True,True,False,True)
+   )
+
+   MAP[(0,1,0)] = Room(
+       "Foyer",
+       #Blank means all doors enabled
+   )
+
+
+   MAP[(0,2,0)] =  Room(
+       "Grand Staircase",
+       (False,False,True,False)
+   )
+
+   MAP[(0,0,1)] = Room(
+       "Upper Landing",
+
+   )
+
+   MAP[(0,0,-1)] = Room(
+       "Basement Landing",
+
+   )
+
+
+   for room in MAP:
+       MAP[room].set_coordnate(room)
+       MAP[room].set_edges()
+
+
+   MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
+   MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
+   MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
+
+
+
+
+
+ #+END_SRC
+
+ #+RESULTS: Map
 ** Room Object
 The room object is the representation of a room tile, the room object should be able to be easily represented by a table.
 A room contains a few bits of information:
@@ -413,121 +512,24 @@ overly complicated pieces. Instead these rooms all get clumped into the catagory
 
       return False
 #+END_SRC
-* TODO Map
-The map is a 3 dimensional space, with various points representing the rooms.
-These points are always intigers, that can range from negative to positive.
-Each point is represented by a 3 digit vector (x,y,z).
-In normal operations Z should only ever range from -1 to 1. However I will not restrict this implicetly.
-Movement across the map is in what is called Taxi-Cab geometry. You cannot move diagonally under normal operations.
-
-Players can move any of the following directions:
-Cardinal Directions:
- * North
- * South
- * East
- * West
-
-Special Directions:
- * Up
- * Down
- * In
- * Out
-
-East and West increase and decrease the x axis by 1
-North and South increase and decrease the y axis by 1.
-
-In and Out are special, and can be thought of teleporting the player or monster to whatever it is connected to.
-In and Out only appear in a few cases, such as secret doors.
-Up and Down could in theory increase and decrease the z axis. And in somecases it might. However the upperlanding and basement landing
-are located at (0,0,1) and (0,0,-1) respectively. And rooms like the collapsed room, and the coal shute could be located anywhere on 
-the map. However if the basement had not been explored yet, it could lead to situations where the players become trapped and never able to
-return upstairs. To prevent this, up and down will also be treated like in and out. 
-
-If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
-If there are no more rooms to discover but there are still open doors, those doors become disabled.
-
-
-#+name: Map
-#+BEGIN_SRC python :noweb yes  :tangle traitor/house.py :var room_table=room-table
-  import itertools
-  import random
-  <<Room_Object>>
-
-  ROOM_LIST = []
-
-  for room in room_table:
-      ROOM_LIST.append(Room(
-          room[0],
-          eval(room[1]),
-          eval(room[2]),)
-      )
-
-
-  <<map_discover>>
-  MAP = {}
-
-  MAP[(0,0,0)]= Room(
-      "Entrance Hall",
-      (True,True,False,True)
-  )
-
-  MAP[(0,1,0)] = Room(
-      "Foyer",
-      #Blank means all doors enabled
-  )
-
-
-  MAP[(0,2,0)] =  Room(
-      "Grand Staircase",
-      (False,False,True,False)
-  )
-
-  MAP[(0,0,1)] = Room(
-      "Upper Landing",
-
-  )
-
-  MAP[(0,0,-1)] = Room(
-      "Basement Landing",
-
-  )
-
-
-  for room in MAP:
-      MAP[room].set_coordnate(room)
-      MAP[room].set_edges()
-
-
-  MAP[(0,0,0)].bi_connect("north", MAP[(0,1,0)])
-  MAP[(0,1,0)].bi_connect("north", MAP[(0,2,0)])
-  MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
-
-
-
-
-
-#+END_SRC
-
-#+RESULTS: Map
-
 ** Moving Between Rooms
-Room objects have a move method, this takes a direction from their edges table and returns the coordnates.
-The idea is so that each character, monster, ect has a "position" that is the room's coordnates.
-In the event that the room hasn't been discovered, it sends up an assertion error that signals to the engine to discover a room.
+ Room objects have a move method, this takes a direction from their edges table and returns the coordnates.
+ The idea is so that each character, monster, ect has a "position" that is the room's coordnates.
+ In the event that the room hasn't been discovered, it sends up an assertion error that signals to the engine to discover a room.
 
-#+name: Move_Room
-#+BEGIN_SRC python 
-  def move(self, direction):
+ #+name: Move_Room
+ #+BEGIN_SRC python 
+   def move(self, direction):
+       for edge in self.edges:
+           if edge["direction"] == direction:
+               assert edge["enabled"] != False
+               return edge["connection"]
 
-      for edge in self.edges:
-          if edge["direction"] == direction:
-              assert edge["enabled"] != False
-              return edge["connection"]
+   def teleport(self,coordnate):
+       return coordnate
 
 
-
-
-#+END_SRC
+ #+END_SRC
 
 ** Discovering Rooms
 Should a player move into a room that hasn't been discovered yet, that player uncovers a new room.

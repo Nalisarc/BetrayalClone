@@ -36,40 +36,20 @@ class player(object):
 
     def go(self,direction):
         try:
-            self.pos = self.house.MAP[self.pos.move(direction)]
+            self.pos = house.MAP[self.pos.move(direction)]
             print(self.pos.name, self.pos.get_coordnate())
             return None
         except AssertionError:
-            x,y,z = self.pos.get_coordnate()
-
-            if direction == "north":
-                y += 1
-            if direction == "south":
-                y -= 1
-            if direction == "east":
-                x += 1
-            if direction == "west":
-                x -= 1
-
-            try:
-                self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
-                self.pos = self.house.MAP[self.pos.move(direction)]
-                print(self.pos.name, self.pos.get_coordnate())
-            except KeyError:
-
-                self.house.spawn_room((x,y,z),
-				      house.List_of_Rooms.pop())
-                self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
-                self.house.MAP[(x,y,z)].set_edges()
-                self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
-                self.pos = self.house.MAP[self.pos.move(direction)]
-                print(self.pos.name, self.pos.get_coordnate())
-                return None
+            print("You can't go that way")
         except KeyError:
-            print("Invaild direction!")
-            print(self.pos.name, self.pos.get_coordnate())
-            return None
-
+            house.spawn_room(
+                (self.pos.move(direction)),
+                 house.ROOM_LIST.pop())
+            house.MAP[self.pos.move(direction)].set_coordnate(
+            self.pos.move(direction))
+            house.MAP[self.pos.move(direction)].set_connections()
+            self.pos = house.MAP[self.pos.move(direction)]
+            print(self.pos.name)
     def quit(self):
         sys.exit()
 
@@ -77,10 +57,11 @@ class player(object):
         print("You are in the {}".format(self.pos.name))
         print("You can go: ")
         for edge in self.pos.edges:
-            print(edge['direction'])
+            if edge["enabled"] == True:
+                print(edge['direction'])
         return None
 
 
 if __name__ == '__main__':
-    me = player(house)
+    me = player()
     me.repl()

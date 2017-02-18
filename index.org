@@ -35,31 +35,9 @@ You can build your own copy of the game by opening index.org in emacs, and runni
 #+name: Character_Object
 #+BEGIN_SRC python :noweb yes :tangle traitor/character.py 
   class Character(object):
-
-      def __init__(self,
-                   name,
-                   birthday,
-                   might,
-                   speed,
-                   knowledge,
-                   sanity):
-
-          self.name = name
-          self.birthday = birthday
-
-          #Stat lists
-
-          self.might = might
-          self.speed = speed
-          self.knowledge = knowledge
-          self.sanity = sanity
-
-          #Inventory
-          self.inventory = []
-
-
-  <<Stat_Object>>
-
+      def __init__(self):
+          self.pos
+    
 #+END_SRC
 ** Statistics
 Stats are represented as dictionaries containing the following bits of info:
@@ -723,14 +701,12 @@ If the newly discoved room has an event in it, the player must stop moving and a
               edges[2]['direction'], 'west')
           self.assertEqual(
               edges[3]['direction'], 'north')
-
-
-
-
-
-
-
 #+END_SRC
+
+#+BEGIN_SRC sh
+  python3 -m unittest tests/map_tests.py
+#+END_SRC
+
 
 * TODO Items
 * TODO Events
@@ -780,40 +756,20 @@ We start putting things together here in the engine
 
       def go(self,direction):
           try:
-              self.pos = self.house.MAP[self.pos.move(direction)]
+              self.pos = house.MAP[self.pos.move(direction)]
               print(self.pos.name, self.pos.get_coordnate())
               return None
           except AssertionError:
-              x,y,z = self.pos.get_coordnate()
-
-              if direction == "north":
-                  y += 1
-              if direction == "south":
-                  y -= 1
-              if direction == "east":
-                  x += 1
-              if direction == "west":
-                  x -= 1
-
-              try:
-                  self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
-                  self.pos = self.house.MAP[self.pos.move(direction)]
-                  print(self.pos.name, self.pos.get_coordnate())
-              except KeyError:
-
-                  self.house.spawn_room((x,y,z),
-					house.List_of_Rooms.pop())
-                  self.house.MAP[(x,y,z)].set_coordnate((x,y,z))
-                  self.house.MAP[(x,y,z)].set_edges()
-                  self.pos.bi_connect(direction, self.house.MAP[(x,y,z)])
-                  self.pos = self.house.MAP[self.pos.move(direction)]
-                  print(self.pos.name, self.pos.get_coordnate())
-                  return None
+              print("You can't go that way")
           except KeyError:
-              print("Invaild direction!")
-              print(self.pos.name, self.pos.get_coordnate())
-              return None
-
+              house.spawn_room(
+                  (self.pos.move(direction)),
+                   house.ROOM_LIST.pop())
+              house.MAP[self.pos.move(direction)].set_coordnate(
+              self.pos.move(direction))
+              house.MAP[self.pos.move(direction)].set_connections()
+              self.pos = house.MAP[self.pos.move(direction)]
+              print(self.pos.name)
       def quit(self):
           sys.exit()
 
@@ -821,12 +777,13 @@ We start putting things together here in the engine
           print("You are in the {}".format(self.pos.name))
           print("You can go: ")
           for edge in self.pos.edges:
-              print(edge['direction'])
+              if edge["enabled"] == True:
+                  print(edge['direction'])
           return None
 
 
   if __name__ == '__main__':
-      me = player(house)
+      me = player()
       me.repl()
 #+END_SRC
 

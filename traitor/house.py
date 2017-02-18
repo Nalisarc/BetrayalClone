@@ -169,6 +169,38 @@ def spawn_room(coordnate, room):
         raise KeyError
 
 
+def discover(coordnate, direction):
+    def only_correct_floor():
+        #Really this only needs to be here
+        room = ROOM_LIST.pop()
+        if coordnate[2] in room.allowed_floors:
+            return room
+        else:
+            ROOM_LIST.append(room)
+            return None
+        return None
+
+    def can_place_room_on_floor():
+        #Check that it is possible to set a room on this floor
+        can = [coordnate[2] in room.allowed_floors for room in ROOM_LIST]
+        return True in can
+
+    spawned_room = None
+    if can_place_room_on_floor:
+        while spawned_room == None:
+            only_correct_floor()
+            continue
+        spawn_room(coordnate,spawned_room)
+        MAP[coordnate].set_coordnate(coordnate)
+        MAP[coordnate].set_edges()
+        MAP[coordnate].set_connections()
+        return None
+    else:
+        print("Error!: There are no rooms that can be placed on this floor!!")
+        return "ERROR!"
+
+
+
 
 
 

@@ -122,3 +122,46 @@ class MapUnitTests(unittest.TestCase):
             edges[2]['direction'], 'west')
         self.assertEqual(
             edges[3]['direction'], 'north')
+
+
+    def test_room_list_has_rooms(self):
+        self.assertNotEqual(house.ROOM_LIST, [],
+                            "ROOM_LIST is empty!!")
+
+
+    """
+    def test_can_not_put_room_on_wrong_floor(self):
+        room_list_copy = list(house.ROOM_LIST)
+        house.ROOM_LIST = [house.Room(
+            "Evil Room!",
+            (False,False,False,False),
+            (1,2,3))]
+        self.pos = house.MAP[(0,0,0)]
+        discover_room = house.discover((1,0,0),None)
+        self.assertEqual(discover_room, "ERROR!")
+        house.ROOM_LIST = room_list_copy
+
+
+    def test_discovered_room_has_coordnate(self):
+        room_list_copy = list(house.ROOM_LIST)
+        house.ROOM_LIST = [house.Room(
+            "Test Room",
+            (True,True,True,True),
+            (-1,0,1))]
+        house.discover((-1,0,0),None)
+        self.assertNotEqual(house.MAP[(-1,0,0)].x, None)
+        house.ROOM_LIST = room_list_copy
+
+    def test_discovered_room_has_edges(self):
+        room_list_copy = list(house.ROOM_LIST)
+        house.ROOM_LIST = [house.Room(
+            "Test Room",
+            (True,True,True,True),
+            (-1,0,1))]
+        house.discover((-2,0,0),None)
+        for edge in house.MAP[(-2,0,0)].edges:
+            self.assertNotEqual(edge,None)
+
+        house.ROOM_LIST = room_list_copy
+
+    """

@@ -183,12 +183,13 @@ def discover(coordnate, direction):
     def can_place_room_on_floor():
         #Check that it is possible to set a room on this floor
         can = [coordnate[2] in room.allowed_floors for room in ROOM_LIST]
-        return True in can
+        return  True in can
 
     spawned_room = None
-    if can_place_room_on_floor:
+    can_place_room = can_place_room_on_floor() 
+    if can_place_room:
         while spawned_room == None:
-            only_correct_floor()
+            spawned_room = only_correct_floor()
             continue
         spawn_room(coordnate,spawned_room)
         MAP[coordnate].set_coordnate(coordnate)
@@ -196,7 +197,7 @@ def discover(coordnate, direction):
         MAP[coordnate].set_connections()
         return None
     else:
-        print("Error!: There are no rooms that can be placed on this floor!!")
+        #print("Error!: There are no rooms that can be placed on this floor!!")
         return "ERROR!"
 
 

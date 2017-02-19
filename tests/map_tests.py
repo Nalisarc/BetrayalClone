@@ -129,7 +129,7 @@ class MapUnitTests(unittest.TestCase):
                             "ROOM_LIST is empty!!")
 
 
-    """
+
     def test_can_not_put_room_on_wrong_floor(self):
         room_list_copy = list(house.ROOM_LIST)
         house.ROOM_LIST = [house.Room(
@@ -163,5 +163,3 @@ class MapUnitTests(unittest.TestCase):
             self.assertNotEqual(edge,None)
 
         house.ROOM_LIST = room_list_copy
-
-    """

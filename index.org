@@ -584,12 +584,13 @@ If the newly discoved room has an event in it, the player must stop moving and a
       def can_place_room_on_floor():
           #Check that it is possible to set a room on this floor
           can = [coordnate[2] in room.allowed_floors for room in ROOM_LIST]
-          return True in can
+          return  True in can
 
       spawned_room = None
-      if can_place_room_on_floor:
+      can_place_room = can_place_room_on_floor() 
+      if can_place_room:
           while spawned_room == None:
-              only_correct_floor()
+              spawned_room = only_correct_floor()
               continue
           spawn_room(coordnate,spawned_room)
           MAP[coordnate].set_coordnate(coordnate)
@@ -597,7 +598,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
           MAP[coordnate].set_connections()
           return None
       else:
-          print("Error!: There are no rooms that can be placed on this floor!!")
+          #print("Error!: There are no rooms that can be placed on this floor!!")
           return "ERROR!"
 
 
@@ -740,7 +741,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
                               "ROOM_LIST is empty!!")
 
 
-      """
+      
       def test_can_not_put_room_on_wrong_floor(self):
           room_list_copy = list(house.ROOM_LIST)
           house.ROOM_LIST = [house.Room(
@@ -751,7 +752,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
           discover_room = house.discover((1,0,0),None)
           self.assertEqual(discover_room, "ERROR!")
           house.ROOM_LIST = room_list_copy
-   
+      
 
       def test_discovered_room_has_coordnate(self):
           room_list_copy = list(house.ROOM_LIST)
@@ -775,13 +776,12 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
           house.ROOM_LIST = room_list_copy
 
-      """
+
 #+END_SRC
 
 #+BEGIN_SRC sh
   python3 -m unittest tests/map_tests.py
 #+END_SRC
-
 
 * TODO Items
 * TODO Events
@@ -861,7 +861,6 @@ We start putting things together here in the engine
       me = player()
       me.repl()
 #+END_SRC
-
 
 * Dice
 The dice in tratior are a type of six sided dice that have the values: 0,1,2 printed twice.

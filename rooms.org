@@ -10,7 +10,7 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Wine Cellar
    :PROPERTIES:
    :SHAPE:    (True,False,True,False)
-   :FLOORS:   (-1)
+   :FLOORS:   (-1,)
    :END:
 ** DONE Junk Room
    :PROPERTIES:
@@ -40,12 +40,12 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Furnace Room
    :PROPERTIES:
    :SHAPE:  (True,False,True,True)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Stairs from the Basement
    :PROPERTIES:
    :SHAPE: (False,False,True,False)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Operating Laboratory
    :PROPERTIES:
@@ -55,12 +55,12 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Pentagram Chamber
    :PROPERTIES:
    :SHAPE: (False,True,False,False)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Attic
    :PROPERTIES:
    :SHAPE: (False,False,True,False)
-   :FLOORS: (1)
+   :FLOORS: (1,)
    :END:
 ** DONE Chapel
    :PROPERTIES:
@@ -85,17 +85,17 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Gardens
    :PROPERTIES:
    :SHAPE: (True,False,True,False)
-   :FLOORS: (0)
+   :FLOORS: (0,)
    :END:
 ** DONE Graveyard
    :PROPERTIES:
    :SHAPE: (False,False,True,False)
-   :FLOORS: (0)
+   :FLOORS: (0,)
    :END:
 ** DONE Patio
    :PROPERTIES:
    :SHAPE: (True,False,True,True)
-   :FLOORS: (0)
+   :FLOORS: (0,)
    :END:
 ** DONE Servants' Quarters
    :PROPERTIES:
@@ -105,12 +105,12 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Catacombs
    :PROPERTIES:
    :SHAPE: (True,False,True,False)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Ballroom
    :PROPERTIES:
    :SHAPE:  (True,True,True,True)
-   :FLOORS: (0)
+   :FLOORS: (0,)
    :END:
 ** DONE Gymnasium
    :PROPERTIES:
@@ -120,12 +120,12 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Tower
    :PROPERTIES:
    :SHAPE: (False,True,False,True)
-   :FLOORS: (1)
+   :FLOORS: (1,)
    :END:
 ** DONE Larder
    :PROPERTIES:
    :SHAPE: (True,False,True,False)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Bloody Room
    :PROPERTIES:
@@ -135,12 +135,12 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Dining Room
    :PROPERTIES:
    :SHAPE: (True,True,False,False)
-   :FLOORS: (0)
+   :FLOORS: (0,)
    :END:
 ** DONE Master Bedroom
    :PROPERTIES:
    :SHAPE: (True,False,False,True)
-   :FLOORS: (1)
+   :FLOORS: (1,)
    :END:
 ** DONE Conservatory
    :PROPERTIES:
@@ -155,12 +155,12 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Bedroom
    :PROPERTIES:
    :SHAPE: (False,True,False,True)
-   :FLOORS: (1)
+   :FLOORS: (1,)
    :END:
 ** DONE Coal Chute
    :PROPERTIES:
    :SHAPE: (True,False,False,False)
-   :FLOORS: (1)
+   :FLOORS: (1,)
    :END:
 ** DONE Game Room
    :PROPERTIES:
@@ -185,7 +185,7 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Balcony
    :PROPERTIES:
    :SHAPE: (True,False,True,False)
-   :FLOORS: (1)
+   :FLOORS: (1,)
    :END:
 ** DONE Statuary Corridor
    :PROPERTIES:
@@ -195,7 +195,7 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Underground Lake
    :PROPERTIES:
    :SHAPE: (True,True,False,False)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Kitchen
    :PROPERTIES:
@@ -205,16 +205,16 @@ So to prevent further stalling, I'm moving the room list to this file.
 ** DONE Chasm
    :PROPERTIES:
    :SHAPE: (False,True,False,True)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Crypt
    :PROPERTIES:
    :SHAPE: (True,False,False,False)
-   :FLOORS: (-1)
+   :FLOORS: (-1,)
    :END:
 ** DONE Gallery
    :PROPERTIES:
    :SHAPE: (True,False,True,False)
-   :FLOORS: (1)
+   :FLOORS: (1,)
    :END:
 

@@ -1,4 +1,4 @@
-room_table=[["Wine Cellar", "(True,False,True,False)", "(-1)"], ["Junk Room", "(True,True,True,True)", "(-1,0,1)"], ["Organ Room", "(False, False, True, True)", "(-1,0,1)"], ["Storeroom", "(True,False,False,False)", "(-1,1)"], ["Creeky Hallway", "(True,True,True,True)", "(-1,0,1)"], ["Dusty Hallway", "(True,True,True,True)", "(-1,0,1)"], ["Furnace Room", "(True,False,True,True)", "(-1)"], ["Stairs from the Basement", "(False,False,True,False)", "(-1)"], ["Operating Laboratory", "(False,True,True,False)", "(-1,1)"], ["Pentagram Chamber", "(False,True,False,False)", "(-1)"], ["Attic", "(False,False,True,False)", "(1)"], ["Chapel", "(True,False,False,False)", "(0,1)"], ["Research Laboratory", "(True,False,True,False)", "(-1,1)"], ["Mystic Elevator", "(True,False,False,False)", "(-1,0,1)"], ["Vault", "(True,False,False,False)", "(-1,1)"], ["Gardens", "(True,False,True,False)", "(0)"], ["Graveyard", "(False,False,True,False)", "(0)"], ["Patio", "(True,False,True,True)", "(0)"], ["Servants' Quarters", "(True,True,True,True)", "(-1,1)"], ["Catacombs", "(True,False,True,False)", "(-1)"], ["Ballroom", "(True,True,True,True)", "(0)"], ["Gymnasium", "(False,True,True,False)", "(-1,1)"], ["Tower", "(False,True,False,True)", "(1)"], ["Larder", "(True,False,True,False)", "(-1)"], ["Bloody Room", "(True,True,True,True)", "(0,1)"], ["Dining Room", "(True,True,False,False)", "(0)"], ["Master Bedroom", "(True,False,False,True)", "(1)"], ["Conservatory", "(True,False,False,False)", "(0,1)"], ["Collapsed Room", "(True,True,True,True)", "(0,1)"], ["Bedroom", "(False,True,False,True)", "(1)"], ["Coal Chute", "(True,False,False,False)", "(1)"], ["Game Room", "(True,True,True,False)", "(-1,0,1)"], ["Library", "(False,False,True,True)", "(0,1)"], ["Charred Room", "(True,True,True,True)", "(0,1)"], ["Abandoned Room", "(True,True,True,True)", "(-1,0)"], ["Balcony", "(True,False,True,False)", "(1)"], ["Statuary Corridor", "(True,False,True,False)", "(-1,0,1)"], ["Underground Lake", "(True,True,False,False)", "(-1)"], ["Kitchen", "(True,True,False,False)", "(-1,0)"], ["Chasm", "(False,True,False,True)", "(-1)"], ["Crypt", "(True,False,False,False)", "(-1)"], ["Gallery", "(True,False,True,False)", "(1)"]]
+room_table=[["Wine Cellar", "(True,False,True,False)", "(-1,)"], ["Junk Room", "(True,True,True,True)", "(-1,0,1)"], ["Organ Room", "(False, False, True, True)", "(-1,0,1)"], ["Storeroom", "(True,False,False,False)", "(-1,1)"], ["Creeky Hallway", "(True,True,True,True)", "(-1,0,1)"], ["Dusty Hallway", "(True,True,True,True)", "(-1,0,1)"], ["Furnace Room", "(True,False,True,True)", "(-1,)"], ["Stairs from the Basement", "(False,False,True,False)", "(-1,)"], ["Operating Laboratory", "(False,True,True,False)", "(-1,1)"], ["Pentagram Chamber", "(False,True,False,False)", "(-1,)"], ["Attic", "(False,False,True,False)", "(1,)"], ["Chapel", "(True,False,False,False)", "(0,1)"], ["Research Laboratory", "(True,False,True,False)", "(-1,1)"], ["Mystic Elevator", "(True,False,False,False)", "(-1,0,1)"], ["Vault", "(True,False,False,False)", "(-1,1)"], ["Gardens", "(True,False,True,False)", "(0,)"], ["Graveyard", "(False,False,True,False)", "(0,)"], ["Patio", "(True,False,True,True)", "(0,)"], ["Servants' Quarters", "(True,True,True,True)", "(-1,1)"], ["Catacombs", "(True,False,True,False)", "(-1,)"], ["Ballroom", "(True,True,True,True)", "(0,)"], ["Gymnasium", "(False,True,True,False)", "(-1,1)"], ["Tower", "(False,True,False,True)", "(1,)"], ["Larder", "(True,False,True,False)", "(-1,)"], ["Bloody Room", "(True,True,True,True)", "(0,1)"], ["Dining Room", "(True,True,False,False)", "(0,)"], ["Master Bedroom", "(True,False,False,True)", "(1,)"], ["Conservatory", "(True,False,False,False)", "(0,1)"], ["Collapsed Room", "(True,True,True,True)", "(0,1)"], ["Bedroom", "(False,True,False,True)", "(1,)"], ["Coal Chute", "(True,False,False,False)", "(1,)"], ["Game Room", "(True,True,True,False)", "(-1,0,1)"], ["Library", "(False,False,True,True)", "(0,1)"], ["Charred Room", "(True,True,True,True)", "(0,1)"], ["Abandoned Room", "(True,True,True,True)", "(-1,0)"], ["Balcony", "(True,False,True,False)", "(1,)"], ["Statuary Corridor", "(True,False,True,False)", "(-1,0,1)"], ["Underground Lake", "(True,True,False,False)", "(-1,)"], ["Kitchen", "(True,True,False,False)", "(-1,0)"], ["Chasm", "(False,True,False,True)", "(-1,)"], ["Crypt", "(True,False,False,False)", "(-1,)"], ["Gallery", "(True,False,True,False)", "(1,)"]]
 #Imports
 import itertools
 import random
@@ -169,36 +169,25 @@ def spawn_room(coordnate, room):
         raise KeyError
 
 
-def discover(coordnate, direction):
-    def only_correct_floor():
-        #Really this only needs to be here
-        room = ROOM_LIST.pop()
-        if coordnate[2] in room.allowed_floors:
-            return room
-        else:
-            ROOM_LIST.append(room)
+
+
+def discover(coordnate,direction,roomlist=ROOM_LIST):
+    def can_place_room_on_on_floor(room):
+        return coordnate[2] in room.allowed_floors
+    for room in roomlist:
+        if can_place_room_on_on_floor(room):
+            spawn_room(coordnate,room)
+            MAP[coordnate].set_coordnate(coordnate)
+            MAP[coordnate].set_edges()
+            MAP[coordnate].set_connections()
+            roomlist.remove(room)
             return None
-        return None
+        else:
+            pass
 
-    def can_place_room_on_floor():
-        #Check that it is possible to set a room on this floor
-        can = [coordnate[2] in room.allowed_floors for room in ROOM_LIST]
-        return  True in can
+    raise KeyError(
+        "Error: No rooms could be placed on {0}".format(coordnate[2]))
 
-    spawned_room = None
-    can_place_room = can_place_room_on_floor() 
-    if can_place_room:
-        while spawned_room == None:
-            spawned_room = only_correct_floor()
-            continue
-        spawn_room(coordnate,spawned_room)
-        MAP[coordnate].set_coordnate(coordnate)
-        MAP[coordnate].set_edges()
-        MAP[coordnate].set_connections()
-        return None
-    else:
-        #print("Error!: There are no rooms that can be placed on this floor!!")
-        return "ERROR!"
 
 
 

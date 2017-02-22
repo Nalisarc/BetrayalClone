@@ -2,9 +2,8 @@ room_table=[["Wine Cellar", "(True,False,True,False)", "(-1,)"], ["Junk Room", "
 #Imports
 import itertools
 import random
-#Constants
-MAP = {}
-ROOM_LIST = []
+#Exceptions
+
 #Objects
 class Room(object):
 
@@ -154,83 +153,76 @@ class Room(object):
 
 
 
-#internal functions
+class RoomList(object):
+    def __init__(self, list_, randomize=False):
+        "A class for keeping track of the deck of room tiles"
+        self.LIST = []
+        for room in list_:
+            self.LIST.append(self.roomize(room))
 
-def spawn_room(coordnate, room):
-    try:
-        assert coordnate not in MAP
-        MAP[coordnate] = room
-        return None
+        if randomize:
+            random.shuffle(self.LIST)
 
-    except AssertionError:
-        print("Error, coordnate is already in use by: {}".format(
-            MAP[coordnate].name)
-	      )
-        raise KeyError
+    def roomize(self,room):
+        "Converts room specs into an actual room object"
+        return Room(
+            room[0],
+            eval(room[1]),
+            eval(room[2]))
 
 
+class Map(object):
+    def __init__(self):
+        self.MAP = {}
+        self.setup()
 
+    def __repr__(self):
+        return [(room.get_coordnate(), room.name) for room in self.MAP]
 
-def discover(coordnate,direction,roomlist=ROOM_LIST):
-    def can_place_room_on_on_floor(room):
-        return coordnate[2] in room.allowed_floors
-    for room in roomlist:
-        if can_place_room_on_on_floor(room):
-            spawn_room(coordnate,room)
-            MAP[coordnate].set_coordnate(coordnate)
-            MAP[coordnate].set_edges()
-            MAP[coordnate].set_connections()
-            roomlist.remove(room)
+    def setup(self):
+        self.MAP[(0,0,0)]= Room(
+            "Entrance Hall",
+            (True,True,False,True)
+        )
+        
+        self.MAP[(0,1,0)] = Room(
+            "Foyer",
+            #Blank means all doors enabled
+        )
+        
+        
+        self.MAP[(0,2,0)] =  Room(
+            "Grand Staircase",
+            (False,False,True,False)
+        )
+        
+        self.MAP[(0,0,1)] = Room(
+            "Upper Landing",
+        
+        )
+        
+        self.MAP[(0,0,-1)] = Room(
+            "Basement Landing",
+        
+        )
+        
+        for room in self.MAP:
+            self.MAP[room].set_coordnate(room)
+            self.MAP[room].set_edges()
+            self.MAP[room].set_connections()
+        
+        self.MAP[(0,2,0)].bi_connect("up", self.MAP[(0,0,1)])
+        
+        
+
+    def spawn_room(self,coordnate,room):
+        if coordnate not in self.MAP.keys():
+            self.MAP[coordnate] = room
             return None
         else:
-            pass
-
-    raise KeyError(
-        "Error: No rooms could be placed on {0}".format(coordnate[2]))
-
+            raise KeyError #Replace with custom execption later
+    
+        raise KeyError #Shouldnt ever happen
 
 
-
-
-
-
-
-for room in room_table:
-    ROOM_LIST.append(Room(
-        room[0],
-        eval(room[1]),
-        eval(room[2]),)
-    )
-
-MAP[(0,0,0)]= Room(
-    "Entrance Hall",
-    (True,True,False,True)
-)
-
-MAP[(0,1,0)] = Room(
-    "Foyer",
-    #Blank means all doors enabled
-)
-
-
-MAP[(0,2,0)] =  Room(
-    "Grand Staircase",
-    (False,False,True,False)
-)
-
-MAP[(0,0,1)] = Room(
-    "Upper Landing",
-
-)
-
-MAP[(0,0,-1)] = Room(
-    "Basement Landing",
-
-)
-
-for room in MAP:
-    MAP[room].set_coordnate(room)
-    MAP[room].set_edges()
-    MAP[room].set_connections()
-
-MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
+#internal functions

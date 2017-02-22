@@ -31,6 +31,7 @@ You can build your own copy of the game by opening index.org in emacs, and runni
 #+END_SRC
 
 * TODO Characters
+** TODO Character Table
 ** Character Object
 #+name: Character_Object
 #+BEGIN_SRC python :noweb yes :tangle traitor/character.py 
@@ -40,17 +41,9 @@ You can build your own copy of the game by opening index.org in emacs, and runni
     
 #+END_SRC
 ** Statistics
-Stats are represented as dictionaries containing the following bits of info:
- * Value tuple
- * Current Slot
-
-Each stat contains a list of 9 possible vaules. The 0 slot of each stat is always "dead".
+Each stat contains a tuple of 9 possible vaules. The 0 slot of each stat is always "dead".
 The remaining stats represent the number of dice that are roled for that type of roll.
 The speed stat is also used to tell how many spaces a character can move per turn.
-#+name: Statistic_Example
-#+BEGIN_SRC python :exports code 
-  might = 
-#+END_SRC
 There might be some confusion about what the starting and current values mean.
 These reference the range tuple slot, not the actual value itself. 
 #+name: Stat_Object
@@ -113,84 +106,76 @@ Characters have some bits of miscellaneous information in addition to their core
 This includes the name of the character, their age, birthday, hobbies, and other bits.
 While it may seem a bit odd this information is used to determine player order, and in haunts.
 
-** Character List
-A list of the built in characters.
-#+name: Character_List
-#+BEGIN_SRC python
-  Character_List = [
-      Character(
-          'Dillion "Zoom" Francis',
-          "06/06",
-          {'range':['dead',2,3,3,4,5,6,6,7],
-           'starting': 3,
-           'current': 3},
-          {'range':['dead',4,4,4,5,6,7,7,8],
-           'starting': 5,
-           'current': 5},
-          {'range':['dead',2,3,3,4,5,5,5,7],
-           'starting': 3,
-           'current': 3},
-          {'range':['dead',1,2,3,4,5,5,5,7],
-           'starting': 3,
-           'current': 3}),
-      Character(
-          'Barry Bovine',
-          "10/18",
-          {'range':['dead',4,5,5,6,6,7,8,8],
-           'starting': 3,
-           'current': 3},
-          {'range':['dead',2,2,2,3,4,5,5,6],
-           'starting': 5,
-           'current': 5},
-          {'range':['dead',2,2,3,3,5,5,6,6],
-           'starting': 3,
-           'current': 3},
-          {'range':['dead',2,2,3,4,5,5,6,7],
-           'starting': 3,
-           'current': 3}),
-      Character(
-          'Madame Zoltera',
-          "12/10",
-          {'range':['dead',2,3,3,4,5,5,5,6],
-           'starting': 4,
-           'current': 4},
-          {'range':['dead',2,3,3,5,5,6,6,7],
-           'starting': 3,
-           'current': 3},
-          {'range':['dead',1,3,4,4,4,5,6,6],
-           'starting': 4,
-           'current': 4},
-          {'range':['dead',4,4,4,5,6,7,8,8],
-           'starting': 3,
-           'current': 3}),
-      Character(
-          'Vivian Martinez',
-          "06/06",
-          {'range':['dead',2,2,2,4,4,5,6,6],
-           'starting': 3,
-           'current': 3},
-          {'range':['dead',3,4,4,4,4,6,7,8],
-           'starting': 4,
-           'current': 4},
-          {'range':['dead',4,5,5,5,5,6,6,7],
-           'starting': 4,
-           'current': 4},
-          {'range':['dead',4,4,4,5,6,7,8,8],
-           'starting': 3,
-           'current': 3}),
-
-
-
-
-#+END_SRC
+** Moving
+** MoveError
+The MoveError is a custom exception used when the characters are unable to move for some reason.
 
 ** Tests
 #+BEGIN_SRC python :tangle tests/character_tests.py
 
   import unittest
-#+END_SRC
+#+END_SRC 
+* TODO House
+The house is a 3 dimensional space, with various points representing the rooms.
+ These points are always intigers, that can range from negative to positive.
+ Each point is represented by a 3 digit vector (x,y,z).
+ In normal operations Z should only ever range from -1 to 1. However I will not restrict this implicetly.
+ Movement across the map is in what is called Taxi-Cab geometry. You cannot move diagonally under normal operations.
 
-* TODO Rooms
+ Players can move any of the following directions:
+ Cardinal Directions:
+  * North
+  * South
+  * East
+  * West
+
+ Special Directions:
+  * Up
+  * Down
+  * In
+  * Out
+
+ East and West increase and decrease the x axis by 1
+ North and South increase and decrease the y axis by 1.
+
+ In and Out are special, and can be thought of teleporting the player or monster to whatever it is connected to.
+ In and Out only appear in a few cases, such as secret doors.
+ Up and Down could in theory increase and decrease the z axis. And in somecases it might. However the upperlanding and basement landing
+ are located at (0,0,1) and (0,0,-1) respectively. And rooms like the collapsed room, and the coal shute could be located anywhere on 
+ the map. However if the basement had not been explored yet, it could lead to situations where the players become trapped and never able to
+ return upstairs. To prevent this, up and down will also be treated like in and out. 
+
+ If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
+ If there are no more rooms to discover but there are still open doors, those doors become disabled.
+** House Main
+ #+BEGIN_SRC python :noweb yes  :tangle traitor/house.py :var room_table=room-table
+   #Imports
+   import itertools
+   import random
+   #Exceptions
+
+   #Objects
+   <<Room_Object>>
+   <<Room_List_Object>>
+   <<Map_Object>>
+   #internal functions
+
+
+ #+END_SRC
+
+** Room Table
+This table contains a list of all the rooms in Tratior along with their initial properties.
+It is dynamically generated from rooms.org.
+The columns are gathered from the property block on each room.
+The name of the room is gathered from the headline.
+Additional notes can be added in beneigh the property drawer, however they will be represented in the table.
+If you want to add in new rooms:
+ 1. Go to rooms.org
+ 2. Add a new headline.
+ 3. Fill in the property drawer
+ 4. Save
+ 5. Run C-c C-c on the Begin block below
+
 #+BEGIN: columnview :skip-empty-rows t :id 909d5b16-7f7f-44a4-94dd-725d716badb8
 #+name: room-table
 | ITEM                     | SHAPE                      | FLOORS   |
@@ -238,107 +223,104 @@ A list of the built in characters.
 | Crypt                    | (True,False,False,False)   | (-1,)    |
 | Gallery                  | (True,False,True,False)    | (1,)     |
 #+END:
-** TODO Map
- The map is a 3 dimensional space, with various points representing the rooms.
- These points are always intigers, that can range from negative to positive.
- Each point is represented by a 3 digit vector (x,y,z).
- In normal operations Z should only ever range from -1 to 1. However I will not restrict this implicetly.
- Movement across the map is in what is called Taxi-Cab geometry. You cannot move diagonally under normal operations.
+** Room List Object
+#+Name: Room_List_Object
+#+BEGIN_SRC python 
+  class RoomList(object):
+      def __init__(self, list_, randomize=False):
+          "A class for keeping track of the deck of room tiles"
+          self.LIST = []
+          for room in list_:
+              self.LIST.append(self.roomize(room))
 
- Players can move any of the following directions:
- Cardinal Directions:
-  * North
-  * South
-  * East
-  * West
+          if randomize:
+              random.shuffle(self.LIST)
 
- Special Directions:
-  * Up
-  * Down
-  * In
-  * Out
-
- East and West increase and decrease the x axis by 1
- North and South increase and decrease the y axis by 1.
-
- In and Out are special, and can be thought of teleporting the player or monster to whatever it is connected to.
- In and Out only appear in a few cases, such as secret doors.
- Up and Down could in theory increase and decrease the z axis. And in somecases it might. However the upperlanding and basement landing
- are located at (0,0,1) and (0,0,-1) respectively. And rooms like the collapsed room, and the coal shute could be located anywhere on 
- the map. However if the basement had not been explored yet, it could lead to situations where the players become trapped and never able to
- return upstairs. To prevent this, up and down will also be treated like in and out. 
-
- If at any point a floor becomes blocked off, the house is suppose to adjust itself, so that at least one door is free.
- If there are no more rooms to discover but there are still open doors, those doors become disabled.
-
- #+BEGIN_SRC python :noweb yes  :tangle traitor/house.py :var room_table=room-table
-   #Imports
-   import itertools
-   import random
-   #Constants
-   MAP = {}
-   ROOM_LIST = []
-   #Objects
-   <<Room_Object>>
-   #internal functions
-   <<map_discover>>
-
-   <<map_setup>>
-
-
-
-
- #+END_SRC
-
-** Set up map
-#+name: map_setup
-#+BEGIN_SRC python
-
-  for room in room_table:
-      ROOM_LIST.append(Room(
-          room[0],
-          eval(room[1]),
-          eval(room[2]),)
-      )
-
-  MAP[(0,0,0)]= Room(
-      "Entrance Hall",
-      (True,True,False,True)
-  )
-
-  MAP[(0,1,0)] = Room(
-      "Foyer",
-      #Blank means all doors enabled
-  )
-
-
-  MAP[(0,2,0)] =  Room(
-      "Grand Staircase",
-      (False,False,True,False)
-  )
-
-  MAP[(0,0,1)] = Room(
-      "Upper Landing",
-
-  )
-
-  MAP[(0,0,-1)] = Room(
-      "Basement Landing",
-
-  )
-
-  for room in MAP:
-      MAP[room].set_coordnate(room)
-      MAP[room].set_edges()
-      MAP[room].set_connections()
-
-  MAP[(0,2,0)].bi_connect("up", MAP[(0,0,1)])
+      def roomize(self,room):
+          "Converts room specs into an actual room object"
+          return Room(
+              room[0],
+              eval(room[1]),
+              eval(room[2]))
 
 
 #+END_SRC
 
+** Map Object
+After much consideration, it is easier to mantain and run tests on objects than it is to use a single module.
+Even though the game will at no point have more than one house.
+Finally it will actually give me the abillity to save a copy of the map, for analysis.
+#+Name: Map_Object
+#+BEGIN_SRC python :noweb yes 
+  class Map(object):
+      def __init__(self):
+          self.MAP = {}
+          self.setup()
+
+      def __repr__(self):
+          return [(room.get_coordnate(), room.name) for room in self.MAP]
+
+      def setup(self):
+          <<map_setup>>
+
+      <<map_spawn_room>>
+
+
+#+END_SRC
+ 
+*** Setup
+ #+name: map_setup
+ #+BEGIN_SRC python
+   self.MAP[(0,0,0)]= Room(
+       "Entrance Hall",
+       (True,True,False,True)
+   )
+
+   self.MAP[(0,1,0)] = Room(
+       "Foyer",
+       #Blank means all doors enabled
+   )
+
+
+   self.MAP[(0,2,0)] =  Room(
+       "Grand Staircase",
+       (False,False,True,False)
+   )
+
+   self.MAP[(0,0,1)] = Room(
+       "Upper Landing",
+
+   )
+
+   self.MAP[(0,0,-1)] = Room(
+       "Basement Landing",
+
+   )
+
+   for room in self.MAP:
+       self.MAP[room].set_coordnate(room)
+       self.MAP[room].set_edges()
+       self.MAP[room].set_connections()
+
+   self.MAP[(0,2,0)].bi_connect("up", self.MAP[(0,0,1)])
+
+
+ #+END_SRC
+*** Spawn Room
+#+name: map_spawn_room
+#+BEGIN_SRC python
+  def spawn_room(self,coordnate,room):
+      if coordnate not in self.MAP.keys():
+          self.MAP[coordnate] = room
+          return None
+      else:
+          raise KeyError #Replace with custom execption later
+
+      raise KeyError #Shouldnt ever happen
+#+END_SRC
+
 ** Room Object
-The room object is the representation of a room tile, the room object should be able to be easily represented by a table.
+   The room object is the representation of a room tile, the room object should be able to be easily represented by a table.
 A room contains a few bits of information:
  1. The Room's Name:
   This is a string of arbitrary length and characters.
@@ -595,23 +577,133 @@ If the newly discoved room has an event in it, the player must stop moving and a
 #+END_SRC
 
 ** Tests
-#+name: Map_Tests
-#+BEGIN_SRC python :tangle tests/map_tests.py 
+*** Boiler Plate                                                   :noexport:
+#+name: house_test_imports
+#+BEGIN_SRC python
   import unittest
   import sys
   from traitor import house
 
+#+END_SRC
+
+#+name: house_test_boiler
+#+BEGIN_SRC python
+#+END_SRC
+
+*** Functional Tests
+#+BEGIN_SRC python :tangle tests/house_tests.py :noweb yes 
+  <<house_test_imports>>
+
+  class HouseFunctionalTests(unittest.TestCase):
+
+      def test_can_not_put_room_on_wrong_floor(self):
+
+          testroom = [house.Room(
+              "Evil Room!",
+              (False, False, False, False),
+              (1, 2, 3))]
+          with self.assertRaises(KeyError):
+              house.discover((6,6,6),None,roomlist=testroom)
+      def test_discovered_room_has_coordnate(self):
+          testroom = [house.Room(
+              "Test Room",
+              (True, True, True, True),
+              (-1, 0, 1))]
+          house.discover((-1, 0, 0), None, roomlist=testroom)
+          self.assertNotEqual(house.MAP[(-1, 0, 0)].x, None)
+
+      def test_discovered_room_has_edges(self):
+          testroom = [house.Room(
+          "Test Room",
+              (True, True, True, True),
+              (-1, 0, 1))]
+          house.discover((-2, 0, 0), None, roomlist=testroom)
+          for edge in house.MAP[(-2, 0, 0)].edges:
+              self.assertNotEqual(edge, None)
+
+
+      def test_each_room_is_placeable(self):
+          x = 1
+          y = 0
+          z = 0
+          roomlist = list(house.ROOM_LIST)
+          while roomlist != []:
+              room = roomlist[0]
+              z = room.allowed_floors[0]
+              house.discover((x,y,z),None, roomlist)
+              x += 1
+          self.assertEqual(len(roomlist), 0, "ROOM_LIST did not empty")
+
+#+END_SRC
+
+*** Room List Tests
+#+BEGIN_SRC python :tangle tests/room_list_tests.py :noweb yes  :var roomlist=room-table
+  <<house_test_imports>>
+
+  class RoomListTests(unittest.TestCase):
+      def setUp(self):
+          self.RoomList = house.RoomList(roomlist)
+        
+      def test_room_list_has_rooms(self):
+          self.assertNotEqual(
+              self.RoomList.LIST, [],
+              "It seems that the roomlist was not properly filled :/"
+          )
+
+#+END_SRC
+*** Room Tests
+#+BEGIN_SRC python :tangle tests/room_unit_tests.py :noweb yes 
+  <<house_test_imports>>
+
+  class RoomUnitTests(unittest.TestCase):
+      def test_rooms_have_no_direction_by_default(self):
+          test_room = house.Room(
+              "test_room"
+          )
+          for edge in test_room.edges:
+              self.assertEqual(edge['direction'], None)
+
+      def test_rooms_default_rotation(self):
+          test_room = house.Room(
+              "test_room")
+          test_room.set_edges()
+          edges = test_room.edges
+          directions = test_room.cardinal_directions
+          zipped = zip(edges, directions)
+          for edge, direction in zipped:
+              self.assertEqual(edge["direction"], direction)
+
+            
+      def test_rooms_rotation(self):
+          test_room = house.Room(
+          "test_room")
+          test_room.set_edges(1)
+          edges = test_room.edges
+          self.assertEqual(
+              edges[0]['direction'], 'east')
+          self.assertEqual(
+              edges[1]['direction'], 'south')
+          self.assertEqual(
+              edges[2]['direction'], 'west')
+          self.assertEqual(
+              edges[3]['direction'], 'north')
+
+#+END_SRC
+*** Map Tests
+#+BEGIN_SRC python :tangle tests/map_tests.py :noweb yes 
+  <<house_test_imports>>
 
   class MapUnitTests(unittest.TestCase):
 
       def setUp(self):
-          self.MAP = house.MAP
+          self.house = house.Map()
+          self.MAP = self.house.MAP
 
-      def test_if_rooms_exist(self):
+      def test_if_setup_room_exist(self):
           list_of_rooms = [[r, self.MAP[r]] for r in self.MAP]
           self.assertNotEqual(len(list_of_rooms), 0)
 
-      def test_if_rooms_connected(self):
+      def test_if_setup_connects_rooms(self):
           # Check if connections can be made
 
           self.assertTrue(
@@ -669,101 +761,11 @@ If the newly discoved room has an event in it, the player must stop moving and a
               "Test Room",
 
           )
-
-          pos = self.MAP[(0, 0, 0)]
-          house.spawn_room(
+          self.house.spawn_room(
               (1, 0, 0),
               discovered_room
           )
-          self.MAP[(1, 0, 0)].set_coordnate((1, 0, 0))
-          self.MAP[(1, 0, 0)].set_edges()
-
-          pos.bi_connect('east', self.MAP[(1, 0, 0)])
-
-          pos = self.MAP[pos.move('east')]
-
-          self.assertEqual(pos, self.MAP[(1, 0, 0)],
-                           "Wrong room?!? {0}".format(pos.name)
-                           )
-
-          # From Room experiment
-
-      def test_rooms_have_no_direction_by_default(self):
-          test_room = house.Room(
-              "test_room"
-          )
-          for edge in test_room.edges:
-              self.assertEqual(edge['direction'], None)
-
-      def test_rooms_default_rotation(self):
-          test_room = house.Room(
-              "test_room")
-          test_room.set_edges()
-          edges = test_room.edges
-          directions = test_room.cardinal_directions
-          zipped = zip(edges, directions)
-          for edge, direction in zipped:
-              self.assertEqual(edge["direction"], direction)
-
-      def test_rooms_rotation(self):
-          test_room = house.Room(
-              "test_room")
-          test_room.set_edges(1)
-          edges = test_room.edges
-          self.assertEqual(
-              edges[0]['direction'], 'east')
-          self.assertEqual(
-              edges[1]['direction'], 'south')
-          self.assertEqual(
-              edges[2]['direction'], 'west')
-          self.assertEqual(
-              edges[3]['direction'], 'north')
-
-      def test_room_list_has_rooms(self):
-          self.assertNotEqual(house.ROOM_LIST, [],
-                              "ROOM_LIST is empty!!")
-
-      def test_can_not_put_room_on_wrong_floor(self):
-
-          testroom = [house.Room(
-              "Evil Room!",
-              (False, False, False, False),
-              (1, 2, 3))]
-          with self.assertRaises(KeyError):
-              house.discover((6,6,6),None,roomlist=testroom)
-      def test_discovered_room_has_coordnate(self):
-          testroom = [house.Room(
-              "Test Room",
-              (True, True, True, True),
-              (-1, 0, 1))]
-          house.discover((-1, 0, 0), None, roomlist=testroom)
-          self.assertNotEqual(house.MAP[(-1, 0, 0)].x, None)
-
-      def test_discovered_room_has_edges(self):
-          testroom = [house.Room(
-              "Test Room",
-              (True, True, True, True),
-              (-1, 0, 1))]
-          house.discover((-2, 0, 0), None, roomlist=testroom)
-          for edge in house.MAP[(-2, 0, 0)].edges:
-              self.assertNotEqual(edge, None)
-
-
-      def test_each_room_is_placeable(self):
-          x = 1
-          y = 0
-          z = 0
-          roomlist = list(house.ROOM_LIST)
-          while roomlist != []:
-              room = roomlist[0]
-              z = room.allowed_floors[0]
-              house.discover((x,y,z),None, roomlist)
-              x += 1
-          self.assertEqual(len(roomlist), 0, "ROOM_LIST did not empty")
-#+END_SRC
-
-#+BEGIN_SRC sh
-  python3 -m unittest tests/map_tests.py
+          self.assertEqual(self.MAP[(1,0,0)], discovered_room)
 #+END_SRC
 
 * TODO Items

@@ -41,11 +41,11 @@ class MapUnitTests(unittest.TestCase):
     def test_can_move_between_rooms(self):
         pos = self.MAP[(0, 0, 0)]
 
-        pos = self.MAP[pos.move('north')]
+        pos = self.MAP[pos.get_connection('north')]
 
         self.assertEqual(pos, self.MAP[(0, 1, 0)],
                          "Position did not move!")
-        pos = self.MAP[pos.move('south')]
+        pos = self.MAP[pos.get_connection('south')]
 
         self.assertEqual(pos, self.MAP[(0, 0, 0)],
                          "Position failed in reverse")
@@ -54,16 +54,8 @@ class MapUnitTests(unittest.TestCase):
 
         pos = self.MAP[(0, 0, 0)]
         try:
-            pos = self.MAP[pos.move('up')]
+            pos = self.MAP[pos.get_connection('up')]
         except KeyError:
-            self.assertEqual(pos, self.MAP[(0, 0, 0)])
-
-    def test_does_not_move_if_room_is_undiscovered(self):
-
-        pos = self.MAP[(0, 0, 0)]
-        try:
-            pos.move("east")
-        except AssertionError:
             self.assertEqual(pos, self.MAP[(0, 0, 0)])
 
     def test_can_spawn_new_rooms(self):

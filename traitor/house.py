@@ -140,16 +140,13 @@ class Room(object):
                 return True
     
         return False
-    def move(self, direction):
+    def get_connection(self, direction):
         for edge in self.edges:
-            if edge["direction"] == direction:
-                assert edge["enabled"] != False
-                return edge["connection"]
-    
-    def teleport(self,coordnate):
-        return coordnate
-    
-    
+            if edge['direction'] == direction:
+                return edge['connection']
+            else:
+                pass
+        raise KeyError #replace with custom error later
 
 
 

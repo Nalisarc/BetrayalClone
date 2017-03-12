@@ -162,10 +162,16 @@ class RoomList(object):
 
     def roomize(self,room):
         "Converts room specs into an actual room object"
-        return Room(
-            room[0],
-            eval(room[1]),
-            eval(room[2]))
+        if type(room) == str:
+            return Room(
+                room[0],
+                eval(room[1]),
+                eval(room[2]))
+        elif str(type(room)) == "<class 'traitor.house.Room'>":
+            return room
+        else:
+            raise TypeError("Error something non roomlike was supplied")
+
 
 
     def draw_room(self):

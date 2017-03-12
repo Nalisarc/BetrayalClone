@@ -7,6 +7,7 @@ into a computer program. I started writing this for the #100daysofcode challenge
 in python. Due to the nature of the style of document that this is written in. You could potentially convert the code into 
 any language with a bit of work.
 You can build your own copy of the game by opening index.org in emacs, and running entering C-c C-v C-t.
+
 * TODO Licence
 #+BEGIN_SRC text :tangle LICENCE.MD 
   Copyright (c) 2017 Daniel Alexander Smith
@@ -238,10 +239,16 @@ If you want to add in new rooms:
 
       def roomize(self,room):
           "Converts room specs into an actual room object"
-          return Room(
-              room[0],
-              eval(room[1]),
-              eval(room[2]))
+          if type(room) == str:
+              return Room(
+                  room[0],
+                  eval(room[1]),
+                  eval(room[2]))
+          elif str(type(room)) == "<class 'traitor.house.Room'>":
+              return room
+          else:
+              raise TypeError("Error something non roomlike was supplied")
+
 
 
       def draw_room(self):
@@ -632,19 +639,29 @@ If the newly discoved room has an event in it, the player must stop moving and a
 #+BEGIN_SRC python
 #+END_SRC
 
-*** Functional Tests
-#+BEGIN_SRC python :tangle tests/house_tests.py :noweb yes 
+*** Discover Tests
+#+BEGIN_SRC python :tangle tests/discover_tests.py :noweb yes 
   <<house_test_imports>>
 
 
   class Discover_Tests(unittest.TestCase):
-      def setUp(self):
-          self.MAP = house.Map()
-          self.ROOM_LIST = house.RoomList(house.room_list)
 
-      def test_can_discover_room(self):
-          discover((1,0,0), 'east',MAP=self.MAP,ROOM_LIST=ROOM_LIST)
-          self.MAP.MAP(1,0,0)
+      def test_placeable_room_exists_will_fail_if_none(self):
+          coordnate = (0,0,1)
+          roomlist = house.RoomList([])
+          self.assertFalse(house.placeable_room_exists(coordnate,roomlist))
+
+      def test_placeable_room_exists_will_pass(self):
+          testroom = house.Room(
+              "test room",
+              (-1,0,1),
+              )
+          coordnate = (0,0,1)
+          roomlist = house.RoomList([testroom])
+
+          self.assertTrue(house.placeable_room_exists(coordnate,roomlist))
+            
+
 #+END_SRC
 
 *** Room List Tests

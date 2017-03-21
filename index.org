@@ -882,5 +882,4 @@ The maximum possible output is 2N and the minimum possible output is always 0
       return sum([random.randint(0,2) for r in range(N)])
 
 
-#+END_SRC
-  
+

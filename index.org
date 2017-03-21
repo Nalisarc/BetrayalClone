@@ -166,18 +166,18 @@ The house is a 3 dimensional space, with various points representing the rooms.
 
 ** Room Table
 This table contains a list of all the rooms in Tratior along with their initial properties.
-It is dynamically generated from rooms.org.
+It is dynamically generated from [[file:rooms.org][the room list]].
 The columns are gathered from the property block on each room.
 The name of the room is gathered from the headline.
-Additional notes can be added in beneigh the property drawer, however they will be represented in the table.
+Additional notes can be added in beneigh the property drawer, however they will not be represented in the table.
 If you want to add in new rooms:
- 1. Go to rooms.org
+ 1. Go to [[file:rooms.org][rooms.org]]
  2. Add a new headline.
  3. Fill in the property drawer
  4. Save
  5. Run C-c C-c on the Begin block below
 
-#+BEGIN: columnview :skip-empty-rows t :id 909d5b16-7f7f-44a4-94dd-725d716badb8
+#+BEGIN: columnview :skip-empty-rows t :id file:rooms.org 
 #+name: room-table
 | ITEM                     | SHAPE                      | FLOORS   |
 |--------------------------+----------------------------+----------|
@@ -224,6 +224,18 @@ If you want to add in new rooms:
 | Crypt                    | (True,False,False,False)   | (-1,)    |
 | Gallery                  | (True,False,True,False)    | (1,)     |
 #+END:
+
+This table is fed into python like so:
+#+BEGIN_EXAMPLE
+  [["item","shape","floors"]...]
+#+END_EXAMPLE
+
+This information is given to the roomlist object, and roomized into actual room objects.
+Please note that these are the inital states of each room object, so it does not contain other information such as:
+ + Coordnates
+ + Contents
+ + Rotation
+
 ** Room List Object
 #+Name: Room_List_Object
 #+BEGIN_SRC python 
@@ -255,6 +267,8 @@ If you want to add in new rooms:
           return self.LIST.pop()
 
       def add_room(self,*rooms,randomize=False):
+          # Expects a list of rooms as input, it does not roomize.
+          # Can be set to randomize as well
           if randomize:
               rooms.random.shuffle()
 
@@ -635,8 +649,11 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
 #+END_SRC
 
-#+name: house_test_boiler
+#+name: test_boiler
 #+BEGIN_SRC python
+  if __name__ == '__main__':
+      unittest.main()
+      sys.exit()
 #+END_SRC
 
 *** Discover Tests

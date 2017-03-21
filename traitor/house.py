@@ -160,17 +160,25 @@ class RoomList(object):
         if randomize:
             random.shuffle(self.LIST)
 
-    def roomize(self,room):
-        "Converts room specs into an actual room object"
-        if type(room) == str:
-            return Room(
-                room[0],
-                eval(room[1]),
-                eval(room[2]))
-        elif str(type(room)) == "<class 'traitor.house.Room'>":
+    def roomize(self, room):
+        """Takes either a room object and passes it to the list, or a list with the room specs and turns it into a room"""
+        input_type = str(type(room))
+        if input_type == "<class 'list'>":
+            # Add in some sanitizers later
+            try:
+                output = Room(
+                    name=room[0],
+                    shape=eval(room[1]),
+                    allowed_floors = eval(room[2]))
+                return output
+            except TypeError:
+                raise ValueError("The room string is malformed")
+
+        elif input_type == "<class 'traitor.house.Room'>":
             return room
         else:
-            raise TypeError("Error something non roomlike was supplied")
+            raise TypeError("{0} was given, expecting a list or a room".format(input_type))
+
 
 
 
@@ -178,6 +186,8 @@ class RoomList(object):
         return self.LIST.pop()
 
     def add_room(self,*rooms,randomize=False):
+        # Expects a list of rooms as input, it does not roomize.
+        # Can be set to randomize as well
         if randomize:
             rooms.random.shuffle()
 

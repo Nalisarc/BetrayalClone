@@ -5,11 +5,19 @@ from traitor import house
 
 
 class RoomListTests(unittest.TestCase):
-    def setUp(self):
-        self.RoomList = house.RoomList(roomlist)
 
-    def test_room_list_has_rooms(self):
+    def test_fill_roomlist(self):
+        ROOMLIST = house.RoomList(roomlist)
         self.assertNotEqual(
-            self.RoomList.LIST, [],
-            "It seems that the roomlist was not properly filled :/"
-        )
+            ROOMLIST.LIST, []
+            )
+
+    def test_can_roomize(self):
+        ROOMLIST = house.RoomList([["test", "(None,None,None,None)", "(None,None,None,None)"]])
+        self.assertEqual(
+            str(type(ROOMLIST.LIST[0])), "<class 'traitor.house.Room'>")
+
+    def test_wont_roomize_garbage(self):
+        ROOMLIST = house.RoomList([])
+        with self.assertRaises(TypeError) as cm:
+            ROOMLIST.roomize(1)

@@ -250,65 +250,33 @@ class Map(object):
 
 
 #internal functions
-def discover(
-        coordnate,
-        direction,
-        MAP=None,
-        ROOM_LIST=None):
 
-    """Spawns a room if possible, then sets everything up"""
-    if placeable_room_exists(coordnate,ROOM_LIST):
-        discarded_rooms = []
-        Run = True
-        while Run:
-            drawn_room = ROOM_LIST.draw_room()
-            if can_place_room(coordnate,drawn_room):
-                MAP.spawn_room(coordnate,drawn_room)
-                MAP.MAP[coordnate].set_coordnate(coordnate)
-                r = set_rotation(drawn_room,direction)
-                MAP.MAP[coordnate].set_edges(r)
-                Run = False
-            else:
-                discarded_rooms.append(drawn_room)
-        if discarded_rooms != []:
-            ROOM_LIST.add_room(*discarded_rooms,randomize=True)
-
-        return None
-
-    else:
-        raise IndexError('No Placeable rooms on this floor!') #Replace with custom exception later
-
-def placeable_room_exists(coordnate,ROOM_LIST=None):
+def placeable_room_exists(coordnate,ROOM_LIST):
     return True in [coordnate[2] in room.allowed_floors for room in ROOM_LIST.LIST]
-
-def set_rotation(room,direction):
-    #Will rotate the room so one enabled edge is faceing the room that lead to it.
-    #consider making the opposite table in the document
-    cardinal_directions = ('north','east','south','west',)
-    opposite_edges = {'north': 'south',
-		      'east': 'west',
-		      'south': 'north',
-		      'west': 'east'}
-    allowed_rotation = []
-    shape = room.shape
-    for rotation in range(4): #anything more is redundant
-        direction_wheel = itertools.cycle(cardinal_directions)
-        test_rotation = {}
-        for n in range(rotation): #spin the wheel
-            direction_wheel.__next__()
-            continue
-        for edge in shape:
-            test_rotation[direction_wheel.__next__()] = edge
-        if test_rotation[
-                opposite_edges[direction]] == True:
-            allowed_rotation.append(rotation)
-        else:
-            pass
-    return allowed_rotation[0] #replace with prompt for user input
-
-
-
-
 
 def can_place_room(coordnate,room):
     return coordnate[2] in room.allowed_floors
+
+def search_for_room(coordnate, ROOM_LIST):
+    # Check to make sure that this is possible
+    if not placeable_room_exists(coordnate):
+        raise IndexError("No rooms can be placed on this floor")
+
+    stack = []
+    run = True
+
+    while run:
+        drawn_room = ROOM_LIST.draw_room()
+        if can_place_room(coordnate,drawn_room):
+            # Do nothing allow for the room to be placed 
+            break
+        else:
+            stack.append(drawn_room)
+
+    ROOM_LIST.add_room(*stack, randomize=True)
+    return drawn_room
+
+def rotate_room(room,direction):
+    # Gets a list of all vaild room rotations
+    # Then calls for user input or the first member
+    pass

@@ -177,8 +177,7 @@ If you want to add in new rooms:
  4. Save
  5. Run C-c C-c on the Begin block below
 
-#+BEGIN: columnview :skip-empty-rows t :id file:rooms.org 
-#+name: room-table
+#+BEGIN: columnview :skip-empty-rows t :id file:rooms.org
 | ITEM                     | SHAPE                      | FLOORS   |
 |--------------------------+----------------------------+----------|
 | Wine Cellar              | (True,False,True,False)    | (-1,)    |
@@ -235,6 +234,8 @@ Please note that these are the inital states of each room object, so it does not
  + Coordnates
  + Contents
  + Rotation
+
+
 
 ** Room List Object
 #+Name: Room_List_Object

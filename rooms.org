@@ -4,7 +4,7 @@ So to prevent further stalling, I'm moving the room list to this file.
 * List of rooms
 :PROPERTIES:
 :COLUMNS: %ITEM %SHAPE %FLOORS
-:ID:       909d5b16-7f7f-44a4-94dd-725d716badb8
+:ID:       909d5b16-7f7f-44a4-94dd-725d716badb8909d5b16-7f7f-44a4-94dd-725d716badb8
 :END:
 
 ** DONE Wine Cellar

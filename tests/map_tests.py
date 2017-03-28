@@ -18,7 +18,6 @@ class MapUnitTests(unittest.TestCase):
 
         self.assertTrue(
             self.MAP[(0, 0, 0)].is_connected_at('north'),
-            self.MAP[(0, 0, 0)].edges
         )
         self.assertTrue(
             self.MAP[(0, 1, 0)].is_connected_at('north')

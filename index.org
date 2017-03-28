@@ -236,7 +236,6 @@ Please note that these are the inital states of each room object, so it does not
  + Contents
  + Rotation
 
-
 ** Room List Object
 #+Name: Room_List_Object
 #+BEGIN_SRC python 
@@ -279,7 +278,7 @@ Please note that these are the inital states of each room object, so it does not
           # Expects a list of rooms as input, it does not roomize.
           # Can be set to randomize as well
           if randomize:
-              rooms.random.shuffle()
+              random.shuffle(rooms)
 
           for room in rooms:
               self.LIST.append(room)
@@ -634,7 +633,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
           for z in zipped:
               condition1 = z[0] == edge_table[direction]
               condition2 = z[1] == True
-            
+
               if condition1 and condition2:
                   allowed_rotations.append(r)
               else:
@@ -642,8 +641,18 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
       return allowed_rotations
 
-
-
+  def discover_room(MAP,ROOM_LIST,coordnate,direction):
+    
+      new_room = search_for_room(coordnate, ROOM_LIST)
+      allowed_rotations = rotate_room(new_room,direction)
+      r = allowed_rotations[0]
+      # Puts room on map
+      MAP.spawn_room(coordnate,new_room)
+      MAP.MAP[coordnate].set_coordnate(coordnate)
+      MAP.MAP[coordnate].set_edges(r)
+      MAP.MAP[coordnate].set_connections()
+      return None #Everything Worked!
+    
 #+END_SRC
 
 ** Tests
@@ -714,6 +723,18 @@ If the newly discoved room has an event in it, the player must stop moving and a
           self.assertEqual(house.rotate_room(ONE_TRUE_ROOM, "north"), ONE_ROTATIONS)
           self.assertEqual(house.rotate_room(ZERO_TRUE_ROOM, "north"), ZERO_ROTATIONS)
 
+
+      def test_discover_room(self):
+          DISCOVERED_ROOM = house.Room("Discoved Room",(True,True,True,True),(-1,0,1))        
+          MAP = house.Map()
+          ROOM_LIST = house.RoomList([DISCOVERED_ROOM])
+          house.discover_room(MAP,ROOM_LIST,(1,0,0),"east")
+
+          self.assertEqual(MAP.MAP[(1,0,0)].name, "Discoved Room")
+
+          self.assertTrue(MAP.MAP[(0,0,0)].is_connected_at('east'))
+          self.assertTrue(MAP.MAP[(1,0,0)].is_connected_at('west'))
+        
 
 #+END_SRC
 
@@ -801,7 +822,6 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
           self.assertTrue(
               self.MAP[(0, 0, 0)].is_connected_at('north'),
-              self.MAP[(0, 0, 0)].edges
           )
           self.assertTrue(
               self.MAP[(0, 1, 0)].is_connected_at('north')

@@ -49,3 +49,15 @@ class Discover_Tests(unittest.TestCase):
         self.assertEqual(house.rotate_room(TWO_TRUE_ROOM, "north"), TWO_ROTATIONS)
         self.assertEqual(house.rotate_room(ONE_TRUE_ROOM, "north"), ONE_ROTATIONS)
         self.assertEqual(house.rotate_room(ZERO_TRUE_ROOM, "north"), ZERO_ROTATIONS)
+
+
+    def test_discover_room(self):
+        DISCOVERED_ROOM = house.Room("Discoved Room",(True,True,True,True),(-1,0,1))        
+        MAP = house.Map()
+        ROOM_LIST = house.RoomList([DISCOVERED_ROOM])
+        house.discover_room(MAP,ROOM_LIST,(1,0,0),"east")
+
+        self.assertEqual(MAP.MAP[(1,0,0)].name, "Discoved Room")
+
+        self.assertTrue(MAP.MAP[(0,0,0)].is_connected_at('east'))
+        self.assertTrue(MAP.MAP[(1,0,0)].is_connected_at('west'))

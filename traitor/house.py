@@ -189,7 +189,7 @@ class RoomList(object):
         # Expects a list of rooms as input, it does not roomize.
         # Can be set to randomize as well
         if randomize:
-            rooms.random.shuffle()
+            random.shuffle(rooms)
 
         for room in rooms:
             self.LIST.append(room)
@@ -307,3 +307,15 @@ def rotate_room(room,direction):
                 continue
 
     return allowed_rotations
+
+def discover_room(MAP,ROOM_LIST,coordnate,direction):
+
+    new_room = search_for_room(coordnate, ROOM_LIST)
+    allowed_rotations = rotate_room(new_room,direction)
+    r = allowed_rotations[0]
+    # Puts room on map
+    MAP.spawn_room(coordnate,new_room)
+    MAP.MAP[coordnate].set_coordnate(coordnate)
+    MAP.MAP[coordnate].set_edges(r)
+    MAP.MAP[coordnate].set_connections()
+    return None #Everything Worked!

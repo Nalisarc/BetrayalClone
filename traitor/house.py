@@ -279,4 +279,31 @@ def search_for_room(coordnate, ROOM_LIST):
 def rotate_room(room,direction):
     # Gets a list of all vaild room rotations
     # Then calls for user input or the first member
-    pass
+    cardinal_directions = ('north','east','south','west')
+    edge_table = {
+        'north': 'south',
+        'south': 'north',
+        'east': 'west',
+        'west': 'east'}
+
+    # A circular list containing the cardinal directions
+    # The wheel "spins" to provide a rotation number
+    # Then the number is fed to the room during assignment
+    allowed_rotations = []
+    for r in range(4):
+        direction_wheel = itertools.cycle(cardinal_directions)
+        for n in range(int(r)):
+            direction_wheel.__next__()
+            continue
+
+        zipped = zip(direction_wheel,room.shape)
+        for z in zipped:
+            condition1 = z[0] == edge_table[direction]
+            condition2 = z[1] == True
+
+            if condition1 and condition2:
+                allowed_rotations.append(r)
+            else:
+                continue
+
+    return allowed_rotations

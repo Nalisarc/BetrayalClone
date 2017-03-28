@@ -26,3 +26,26 @@ class Discover_Tests(unittest.TestCase):
         ROOM_LIST = house.RoomList([])
         with self.assertRaises(IndexError) as cm:
             house.search_for_room((0,0,0),ROOM_LIST)
+        return None
+
+
+    def test_rotate_room(self):
+        # Test Rooms
+        FOUR_TRUE_ROOM = house.Room("Test Room 4",(True,True,True,True),(-1,0,1))
+        THREE_TRUE_ROOM = house.Room("Test Room 3",(False,True,True,True),(-1,0,1))
+        TWO_TRUE_ROOM = house.Room("Test Room 2",(False,False,True,True),(-1,0,1))
+        ONE_TRUE_ROOM = house.Room("Test Room 1",(False,False,False,True),(-1,0,1))
+        ZERO_TRUE_ROOM = house.Room("Test Room 0",(False,False,False,False),(-1,0,1))
+        # Expected Rotations
+        FOUR_ROTATIONS = [0,1,2,3]
+        THREE_ROTATIONS = [0,1,3]
+        TWO_ROTATIONS = [0,3]
+        ONE_ROTATIONS = [3]
+        ZERO_ROTATIONS = []
+
+        # Tests if output matches expected
+        self.assertEqual(house.rotate_room(FOUR_TRUE_ROOM,"north"),FOUR_ROTATIONS)
+        self.assertEqual(house.rotate_room(THREE_TRUE_ROOM, "north"),THREE_ROTATIONS)
+        self.assertEqual(house.rotate_room(TWO_TRUE_ROOM, "north"), TWO_ROTATIONS)
+        self.assertEqual(house.rotate_room(ONE_TRUE_ROOM, "north"), ONE_ROTATIONS)
+        self.assertEqual(house.rotate_room(ZERO_TRUE_ROOM, "north"), ZERO_ROTATIONS)

@@ -259,7 +259,7 @@ def can_place_room(coordnate,room):
 
 def search_for_room(coordnate, ROOM_LIST):
     # Check to make sure that this is possible
-    if not placeable_room_exists(coordnate):
+    if not placeable_room_exists(coordnate, ROOM_LIST):
         raise IndexError("No rooms can be placed on this floor")
 
     stack = []

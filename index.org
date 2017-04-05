@@ -240,14 +240,22 @@ Please note that these are the inital states of each room object, so it does not
 #+Name: Room_List_Object
 #+BEGIN_SRC python 
   class RoomList(object):
-      def __init__(self, list_, randomize=False):
+      def __init__(self, list_of_rooms, randomize=False):
           "A class for keeping track of the deck of room tiles"
-          self.LIST = []
-          for room in list_:
-              self.LIST.append(self.roomize(room))
+          self._cards = []
+          for room in list_of_rooms:
+              self._cards.append(self.roomize(room))
 
           if randomize:
-              random.shuffle(self.LIST)
+              random.shuffle(self._cards)
+
+          return None
+
+      def __getitem__(self, position):
+          return _cards[position]
+
+      def __len__(self):
+          return len(self._cards)
 
       def roomize(self, room):
           """Takes either a room object and passes it to the list, or a list with the room specs and turns it into a room"""
@@ -272,7 +280,7 @@ Please note that these are the inital states of each room object, so it does not
 
 
       def draw_room(self):
-          return self.LIST.pop()
+          return self._cards.pop()
 
       def add_room(self,*rooms,randomize=False):
           # Expects a list of rooms as input, it does not roomize.
@@ -281,10 +289,14 @@ Please note that these are the inital states of each room object, so it does not
               random.shuffle(rooms)
 
           for room in rooms:
-              self.LIST.append(room)
+              self._cards.append(room)
 
           return None
 #+END_SRC
+
+*** TODO Replace custom methods with pythonic [/]
+
+**** TODO Replace draw_room with __getitem__()
 
 ** Map Object
 After much consideration, it is easier to mantain and run tests on objects than it is to use a single module.
@@ -746,14 +758,12 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
       def test_fill_roomlist(self):
           ROOMLIST = house.RoomList(roomlist)
-          self.assertNotEqual(
-              ROOMLIST.LIST, []
-              )
+          self.assertTrue((len(ROOMLIST) > 0))
 
       def test_can_roomize(self):
           ROOMLIST = house.RoomList([["test", "(None,None,None,None)", "(None,None,None,None)"]])
           self.assertEqual(
-              str(type(ROOMLIST.LIST[0])), "<class 'traitor.house.Room'>")
+              str(type(ROOMLIST._cards[0])), "<class 'traitor.house.Room'>")
 
       def test_wont_roomize_garbage(self):
           ROOMLIST = house.RoomList([])
@@ -873,9 +883,33 @@ If the newly discoved room has an event in it, the player must stop moving and a
           self.assertEqual(self.MAP[(1,0,0)], discovered_room)
 #+END_SRC
 
-* TODO Items
-* TODO Events
-* TODO Omens
+* Cards
+** Deck Object
+These decks all behave the same therfore instead of writing a unique object for each of them,
+I will instead be consolidating them into a single Deck object. One for omens, one for items, one for events.
+Potentally I may re write the RoomList into this class as well.
+#+name: Deck_Object
+#+BEGIN_SRC python
+  class Deck(object):
+      def __init__(self, _list):
+          self._list = _list
+          return None
+        
+      def __repr__(self):
+          return "Deck({0})".format(self._list)
+
+      def __getitem__(self,position):
+          return self._list[position])
+
+      def __setitem__(self,position,value):
+          self._list[position] = value
+          return None
+    
+#+END_SRC
+
+** TODO Items
+** TODO Events
+** TODO Omens
 * TODO Haunts
 #+BEGIN: columnview :skip-empty-rows t :id file:haunts.org
 
@@ -883,72 +917,6 @@ If the newly discoved room has an event in it, the player must stop moving and a
 * TODO Engine
 We start putting things together here in the engine
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes  :shebang #!/usr/bin/env python3
-  import sys
-  import house
-  class player(object):
-
-      def __init__(self):
-
-          self.pos = house.MAP[(0,0,0)]
-          return None
-
-      def repl(self):
-          print("Traitor pre-alpha demo")
-          print("Made by Daniel A Smith")
-          prompt = '==> '
-
-          while True:
-              command = input(prompt)
-              command_parsed = command.split()
-              if len(command_parsed) == 0:
-                  pass
-              elif command_parsed[0] == 'go':
-                  try:
-                      self.go(command_parsed[1])
-                  except IndexError:
-                      d = input("Which direction do you want to go?: ")
-                      self.go(d)
-                  except:
-                      print("Something went wrong")
-              elif command_parsed[0] == 'look':
-                  self.look()
-              elif command_parsed[0] == 'quit':
-                  self.quit()
-              else:
-                  print("Invaild command, sorry")
-
-
-      def go(self,direction):
-          try:
-              self.pos = house.MAP[self.pos.move(direction)]
-              print(self.pos.name, self.pos.get_coordnate())
-              return None
-          except AssertionError:
-              print("You can't go that way")
-          except KeyError:
-              house.spawn_room(
-                  (self.pos.move(direction)),
-                   house.ROOM_LIST.pop())
-              house.MAP[self.pos.move(direction)].set_coordnate(
-              self.pos.move(direction))
-              house.MAP[self.pos.move(direction)].set_connections()
-              self.pos = house.MAP[self.pos.move(direction)]
-              print(self.pos.name)
-      def quit(self):
-          sys.exit()
-
-      def look(self):
-          print("You are in the {}".format(self.pos.name))
-          print("You can go: ")
-          for edge in self.pos.edges:
-              if edge["enabled"] == True:
-                  print(edge['direction'])
-          return None
-
-
-  if __name__ == '__main__':
-      me = player()
-      me.repl()
 #+END_SRC
 
 * Dice

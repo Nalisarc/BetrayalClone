@@ -151,14 +151,22 @@ class Room(object):
 
 
 class RoomList(object):
-    def __init__(self, list_, randomize=False):
+    def __init__(self, list_of_rooms, randomize=False):
         "A class for keeping track of the deck of room tiles"
-        self.LIST = []
-        for room in list_:
-            self.LIST.append(self.roomize(room))
+        self._cards = []
+        for room in list_of_rooms:
+            self._cards.append(self.roomize(room))
 
         if randomize:
-            random.shuffle(self.LIST)
+            random.shuffle(self._cards)
+
+        return None
+
+    def __getitem__(self, position):
+        return _cards[position]
+
+    def __len__(self):
+        return len(self._cards)
 
     def roomize(self, room):
         """Takes either a room object and passes it to the list, or a list with the room specs and turns it into a room"""
@@ -183,7 +191,7 @@ class RoomList(object):
 
 
     def draw_room(self):
-        return self.LIST.pop()
+        return self._cards.pop()
 
     def add_room(self,*rooms,randomize=False):
         # Expects a list of rooms as input, it does not roomize.
@@ -192,7 +200,7 @@ class RoomList(object):
             random.shuffle(rooms)
 
         for room in rooms:
-            self.LIST.append(room)
+            self._cards.append(room)
 
         return None
 class Map(object):

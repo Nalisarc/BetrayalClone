@@ -8,14 +8,12 @@ class RoomListTests(unittest.TestCase):
 
     def test_fill_roomlist(self):
         ROOMLIST = house.RoomList(roomlist)
-        self.assertNotEqual(
-            ROOMLIST.LIST, []
-            )
+        self.assertTrue((len(ROOMLIST) > 0))
 
     def test_can_roomize(self):
         ROOMLIST = house.RoomList([["test", "(None,None,None,None)", "(None,None,None,None)"]])
         self.assertEqual(
-            str(type(ROOMLIST.LIST[0])), "<class 'traitor.house.Room'>")
+            str(type(ROOMLIST._cards[0])), "<class 'traitor.house.Room'>")
 
     def test_wont_roomize_garbage(self):
         ROOMLIST = house.RoomList([])

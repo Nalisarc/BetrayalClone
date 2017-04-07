@@ -889,7 +889,7 @@ These decks all behave the same therfore instead of writing a unique object for 
 I will instead be consolidating them into a single Deck object. One for omens, one for items, one for events.
 Potentally I may re write the RoomList into this class as well.
 #+name: Deck_Object
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
   class Deck(object):
       def __init__(self, _list):
           self._list = _list
@@ -918,6 +918,7 @@ When a player discovers a room, they may come across an item.
 Item cards are put into the players inventory, some are one offs, and others can be used multiple times.
 More importantly, some items can be stolen, while others cannot.
 Items can be traded and dropped into the room they are in.
+
 ** TODO Events
 When a player discovers a room, they may trigger an event.
 ** TODO Omens
@@ -927,6 +928,7 @@ Companions are omens that the player can control.
 Item like omens, that can be dropped traded on sometimes stolen.
 Effect omens, that cannot be dropped traded or stolen.
 When an omen is discovered and the haunt has not started yet, the player that discovered it must make a haunt roll.
+** TODO Rooms
 ** Tests
 #+BEGIN_SRC python :tangle tests/test_Deck_object.py :noweb yes 
   import unittest

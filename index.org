@@ -889,7 +889,7 @@ These decks all behave the same therfore instead of writing a unique object for 
 I will instead be consolidating them into a single Deck object. One for omens, one for items, one for events.
 Potentally I may re write the RoomList into this class as well.
 #+name: Deck_Object
-#+BEGIN_SRC python
+#+BEGIN_SRC python 
   class Deck(object):
       def __init__(self, _list):
           self._list = _list
@@ -920,8 +920,21 @@ Potentally I may re write the RoomList into this class as well.
 #+END_SRC
 
 ** TODO Items
+When a player discovers a room, they may come across an item.
+Item cards are put into the players inventory, some are one offs, and others can be used multiple times.
+More importantly, some items can be stolen, while others cannot.
+Items can be traded and dropped into the room they are in.
+
 ** TODO Events
+When a player discovers a room, they may trigger an event.
 ** TODO Omens
+When a player discovers a room, they my find an omen.
+Omens can behave like items in some sense. However there are a few types.
+Companions are omens that the player can control.
+Item like omens, that can be dropped traded on sometimes stolen.
+Effect omens, that cannot be dropped traded or stolen.
+When an omen is discovered and the haunt has not started yet, the player that discovered it must make a haunt roll.
+** TODO Rooms
 ** Tests
 #+BEGIN_SRC python :tangle tests/test_Deck_object.py :noweb yes 
   import unittest
@@ -969,9 +982,22 @@ Potentally I may re write the RoomList into this class as well.
 #+END_SRC
 
 * TODO Haunts
+Haunts are the second phase of the game.
+When the haunt phase begins, the haunt is chosen from the haunt table.
+This is done by checking which omen was discovered, and which room it was discovered in.
+The haunt will then tell the engine who is the traitor.
+The traitor is shown their rules and the heros are shown theirs.
+Finally the map is set up to accomdate the haunt.
+** Haunt Table
 #+BEGIN: columnview :skip-empty-rows t :id file:haunts.org
 
 #+END:
+** Haunt Role
+When a player discoveres an omen, and the haunt has not start they must make a haunt role.
+To do this, the player rolls 6 of the dice and sums the results.
+If the number is greater than or equal too the number of discovered omens, nothing happens and the players continue the explore phase.
+If the number is smaller the number of discovered omens, the haunt begins.
+
 * TODO Engine
 We start putting things together here in the engine
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes  :shebang #!/usr/bin/env python3

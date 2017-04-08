@@ -5,6 +5,9 @@ class Deck(object):
         self._list = _list
         return None
 
+    def __len__(self):
+        return len(self._list)
+
     def __repr__(self):
         return "Deck({0})".format(self._list)
 
@@ -18,6 +21,9 @@ class Deck(object):
     def append(self,value):
         self._list.append(value)
         return None
+
+    def pop(self):
+        return self._list.pop()
 
 
 
@@ -52,3 +58,9 @@ class DeckUnitTests(unittest.TestCase):
         test = Deck([1,2,3])
         for i in test:
             self.assertEqual(i, test[i-1])
+
+    def test_decks_can_be_popped(self):
+        test = Deck([1,2,3])
+        v = test.pop()
+        self.assertEqual(v, 3)
+        self.assertEqual(len(test),2)

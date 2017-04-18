@@ -1011,11 +1011,34 @@ For example: if you were to role a knowledge roll and your stat was 3, you would
 3 random numbers between 0-2. Therefore the highest you can get is 6.
 In the game, there are only 8 dice. I won't be capping that number explictly because you won't get above it in game.
 The maximum possible output is 2N and the minimum possible output is always 0
-#+name: dice_function
+
+#+name: dice
 #+BEGIN_SRC python
   import random
-  def roll(N):
-      return sum([random.randint(0,2) for r in range(N)])
 
+  ## My Dice Class I use for everything
+  class Dice(object):
+
+      def __init__(self,_min,_max):
+          self._min = _min
+          self._max = _max
+          return None
+
+      def __repr__(self):
+          return "Dice({0},{1})".format(self._min, self._max)
+
+      def roll(self):
+          return random.randint(self._min, self._max)
+
+
+
+
+
+
+  def roll_dice(0):
+      d = Dice(0,2)
+      return d.roll()
+
+#+END_SRC
 
 

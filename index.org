@@ -37,9 +37,16 @@ You can build your own copy of the game by opening index.org in emacs, and runni
 #+name: Character_Object
 #+BEGIN_SRC python :noweb yes :tangle traitor/character.py 
   class Character(object):
-      def __init__(self):
-          self.pos
-    
+      def __init__(self,inventory=[],**kwargs):
+
+          #Stats
+          self.might = kwargs.might
+          self.speed = kwargs.speed
+          self.knowledge = kwargs.knowledge
+          self.sanity = kwargs.sanity
+
+          self.inventory = inventory
+
 #+END_SRC
 ** Statistics
 Each stat contains a tuple of 9 possible vaules. The 0 slot of each stat is always "dead".
@@ -687,7 +694,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
 *** Discover Tests
 #+BEGIN_SRC python :tangle tests/discover_tests.py :noweb yes 
   <<house_test_imports>>
-
+  from cards import Deck
 
   class Discover_Tests(unittest.TestCase):
 
@@ -746,7 +753,7 @@ If the newly discoved room has an event in it, the player must stop moving and a
 
           self.assertTrue(MAP.MAP[(0,0,0)].is_connected_at('east'))
           self.assertTrue(MAP.MAP[(1,0,0)].is_connected_at('west'))
-        
+
 
 #+END_SRC
 
@@ -891,6 +898,7 @@ Potentally I may re write the RoomList into this class as well.
 #+name: Deck_Object
 #+BEGIN_SRC python 
   class Deck(object):
+
       def __init__(self, _list):
           self._list = _list
           return None
@@ -901,22 +909,19 @@ Potentally I may re write the RoomList into this class as well.
       def __repr__(self):
           return "Deck({0})".format(self._list)
 
-      def __getitem__(self,position):
+      def __getitem__(self, position):
           return self._list[position]
 
-      def __setitem__(self,position,value):
+      def __setitem__(self, position, value):
           self._list[position] = value
           return None
 
-      def append(self,value):
+      def append(self, value):
           self._list.append(value)
           return None
 
       def pop(self):
           return self._list.pop()
-
-
-
 #+END_SRC
 
 ** TODO Items
@@ -999,8 +1004,15 @@ If the number is greater than or equal too the number of discovered omens, nothi
 If the number is smaller the number of discovered omens, the haunt begins.
 
 * TODO Engine
+** Players
+
 We start putting things together here in the engine
 #+BEGIN_SRC python :tangle traitor/main.py :noweb yes  :shebang #!/usr/bin/env python3
+  #Standard Library
+  import sys
+  #3rd Party
+  #Traitor
+  from dice import Dice
 #+END_SRC
 
 * Dice
@@ -1013,7 +1025,7 @@ In the game, there are only 8 dice. I won't be capping that number explictly bec
 The maximum possible output is 2N and the minimum possible output is always 0
 
 #+name: dice
-#+BEGIN_SRC python
+#+BEGIN_SRC python :tangle traitor/dice.py 
   import random
 
   ## My Dice Class I use for everything
@@ -1029,15 +1041,6 @@ The maximum possible output is 2N and the minimum possible output is always 0
 
       def roll(self):
           return random.randint(self._min, self._max)
-
-
-
-
-
-
-  def roll_dice(0):
-      d = Dice(0,2)
-      return d.roll()
 
 #+END_SRC
 
